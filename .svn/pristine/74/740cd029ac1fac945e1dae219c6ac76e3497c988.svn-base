@@ -1,0 +1,92 @@
+package model.fornecedor;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.ArrayList;
+
+import model.erros.Excecao;
+import model.fabricaDAOS.AdmBancoSql;
+
+public class FornecedorDAOMysql extends FornecedorDAO{
+
+	@Override
+	public void inserir(FornecedorVO fornecedor) throws Exception {
+		
+		PreparedStatement ps = null;
+		Connection conn = null;
+		
+		try{
+			String stringSQL="INSERT INTO Fornecedor (idFornecedor,nome,cidade,uf,cnpj,inscricao,dataCadastro) VALUES (?,?,?,?,?,?,?)";
+			
+			conn = AdmBancoSql.getConnection();
+			ps = conn.prepareStatement(stringSQL);
+			
+			ps.setInt(1, fornecedor.getId());
+			ps.setString(2, fornecedor.getNome());
+			ps.setString(3, fornecedor.getCidade());
+			ps.setString(4, fornecedor.getUf());
+			ps.setString(5, fornecedor.getCnpj());
+			ps.setString(6, fornecedor.getInscricao());
+			ps.setDate(7, fornecedor.getDataCadastro());
+			ps.executeUpdate();
+		
+		} catch (SQLException sqle) {
+			String mensagemUsuario="Erro ao inserir os dados do Fornecedor "+fornecedor.getNome();
+//			erroSalvar="Erro ao inserir os dados do Fornecedor "+fornecedor.getNome()+"!!\n"+
+//					"SQLException:"+sqle.getMessage()+
+//					"\nSQLState: "+sqle.getSQLState()+
+//					"\nVendorError: "+sqle.getErrorCode();
+			
+			throw new Excecao(mensagemUsuario, sqle);
+			
+		} finally {
+			AdmBancoSql.closeConnection(conn, ps, null);
+		}
+		
+	}
+
+	@Override
+	public void excluir(int id, String nome) throws Exception {
+		PreparedStatement ps = null;
+		Connection conn = null;
+		try {
+			conn = AdmBancoSql.getConnection();
+			ps = conn.prepareStatement("DELETE FROM Fornecedor WHERE idFornecedor = ?");
+			ps.setInt(1, id);
+			
+			int statusExclusao=ps.executeUpdate();
+			
+			if (statusExclusao==0){
+				String mensagemUsuario="Erro ao excluir o Fornecedor "+nome+"!!\nN"+(char)227+"o foi poss"+(char)237+"vel encontrar o fornecedor!!\nUma mensagem com mais detalhes sobre o erro ser"+(char)225+" enviada para o administrador do sistema!!",
+				erroSalvar="Erro ao excluir o Fornecedor "+nome+"!!\nN"+(char)227+"o foi poss"+(char)237+"vel encontrar o fornecedor!!\n" +
+						"O usu"+(char)225+"rio tentou excluir um fornecedor foi n"+(char)227+"o est"+(char)225+" cadastrado";
+				
+				throw new Excecao(mensagemUsuario, new SQLException(erroSalvar));
+				
+			}
+			
+		} catch (SQLException sqle) {
+			String mensagemUsuario="Erro ao excluir o Fornecedor "+nome+"!!\nUma mensagem com mais detalhes sobre o erro ser"+(char)225+" enviada para o administrador do sistema!!";
+//			erroSalvar="Erro ao excluir o Fornecedor "+nome+"!!\n"+
+//					"SQLException:"+sqle.getMessage()+
+//					"\nSQLState: "+sqle.getSQLState()+
+//					"\nVendorError: "+sqle.getErrorCode();
+			
+			throw new Excecao(mensagemUsuario, sqle);
+			
+		} finally {
+			AdmBancoSql.closeConnection(conn, ps, null);
+		}
+	}
+
+	@Override
+	public void alterar(FornecedorVO fornecedor) throws Exception {
+	}
+
+	@Override
+	public ArrayList<FornecedorVO> listar(String coluna, String organizarPor, String texto) throws Exception{
+		return null;
+	}
+
+}

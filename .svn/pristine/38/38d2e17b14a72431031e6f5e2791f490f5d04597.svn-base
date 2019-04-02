@@ -1,0 +1,5 @@
+package model.entrada;
+
+public class EntradaDAOOracle extends EntradaDAO{
+
+}

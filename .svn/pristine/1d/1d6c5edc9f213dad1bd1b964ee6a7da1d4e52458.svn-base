@@ -1,0 +1,165 @@
+package ControleNegocios;
+
+import java.sql.Date;
+import java.util.ArrayList;
+
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableRowSorter;
+
+import admBanco.InterfaceBanco;
+import admBanco.DAOs.MaterialDAO;
+import admBanco.DAOs.PostoDeSaudeDAO;
+import basicas.Material;
+import basicas.PostoDeSaude;
+import ControleNegocios.interfaces.InterfaceControlePosto;
+
+public class ControlePostoDeSaude implements InterfaceControlePosto{
+
+	public String verificarDados(String nome, String cidade, String bairro, String cep, String fone) {
+		String resultado="";
+		if (nome.equals(""))
+			resultado+="Erro!!\nPor favor digite um nome v"+(char)225+"lido para o posto de sa"+(char)250+"de.";
+		
+		else if (nome.length()>45)
+			resultado+="Erro!!\nVoc"+(char)234+" excedeu limite de caracteres para o nome do posto de sa"+(char)250+"de.";
+		
+		if (cidade.equals("")){
+			if (resultado.equals("")) resultado="Erro!!";
+		
+			resultado+="\nPor favor digite um nome v"+(char)225+"lido para a cidade.";
+			
+		}else if (cidade.length()>45){
+			if (resultado.equals("")) resultado="Erro!!";
+		
+			resultado+="\nVoc"+(char)234+" excedeu limite de caracteres para o nome da cidade.";
+		}
+		if (bairro.equals("")) {
+			if (resultado.equals("")) resultado="Erro!!";
+			
+			resultado+="\nPor favor digite um nome v"+(char)225+"lido para bairro.";
+			
+		}else if (bairro.length()>45){
+			if (resultado.equals("")) resultado="Erro!!";
+		
+			resultado+="\nVoc"+(char)234+" excedeu limite de caracteres para o nome da bairro.";
+		}
+		if (cep.contains("_")) {
+			if (resultado.equals("")) resultado="Erro!!";
+			
+			resultado+="\nPor favor digite um CEP v"+(char)225+"lido.";
+			
+		}
+		
+		if (fone.contains("_")) {
+			if (resultado.equals("")) resultado="Erro!!";
+			
+			resultado+="\nPor favor digite um telefone v"+(char)225+"lido.";
+			
+		}
+		return resultado;
+	}
+
+	public String salvar(String nome, String cidade, String bairro, String uf, String cep, String fone) {
+		String resultado=verificarDados(nome, cidade, bairro, cep, fone);
+		
+		if (resultado.equals("")) {
+			InterfaceBanco admPosto=new PostoDeSaudeDAO();
+			resultado=admPosto.inserir(new PostoDeSaude(0, nome, cidade, bairro, uf, cep, fone, new Date(System.currentTimeMillis())));;
+			
+		}
+		
+		return resultado;
+	}
+
+	public String alterar(int id, String nome, String cidade, String bairro, String uf, String cep, String fone, String dataCadastro) {
+		String resultado=verificarDados(nome, cidade, bairro, cep, fone);
+		
+		if (resultado.equals("")) {
+			InterfaceBanco admPosto=new PostoDeSaudeDAO();
+			resultado=admPosto.alterar(new PostoDeSaude(id, nome, cidade, bairro, uf, cep, fone, null));
+			
+		}
+		
+		return resultado;
+	}
+
+	public JTable obterTabela(String pesquisarPor, String organizarPor, String textoPesquisa) {
+		String[] colunas=new String[8];;
+		JTable tabela=null;
+		DefaultTableModel modelo=null;
+		
+		InterfaceBanco admPosto=new PostoDeSaudeDAO();
+		ArrayList<Object> objectTemp = admPosto.listar(pesquisarPor, organizarPor, textoPesquisa);
+		
+		colunas[0] = "ID";
+		colunas[1] = "Nome";
+		colunas[2] = "Cidade";
+		colunas[3] = "Bairro";
+		colunas[4] = "UF";
+		colunas[5] = "CEP";
+		colunas[6] = "Fone";
+		colunas[7] = "Data Cadastro";
+		
+		modelo = new DefaultTableModel(new Object[][]{}, colunas);
+		for (int i = 0; i < objectTemp.size(); i++) {
+			PostoDeSaude posto = (PostoDeSaude)objectTemp.get(i);
+			
+			String linha[]= {""+posto.getIdPSF(),
+							""+posto.getNome(),
+							""+posto.getCidade(),
+							""+posto.getBairro(),
+							""+posto.getUF(),
+							""+posto.getCEP(),
+							""+posto.getFone(),
+							""+posto.getDataCadastro()};
+			
+			modelo.addRow(linha);
+		}
+		
+		tabela = new JTable(modelo);
+		tabela.setFillsViewportHeight(true);
+		tabela.setRowSorter(new TableRowSorter<DefaultTableModel>(modelo));
+//		tabela.getTableHeader().setReorderingAllowed(true);
+		tabela.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+		tabela.getTableHeader().setReorderingAllowed(false);//NAO PERMITE A REORDENACAO DAS COLUNAS
+		tabela.getColumnModel().getColumn(0).setPreferredWidth(50);
+		tabela.getColumnModel().getColumn(1).setPreferredWidth(230);
+		tabela.getColumnModel().getColumn(2).setPreferredWidth(190);
+		tabela.getColumnModel().getColumn(3).setPreferredWidth(130);
+		tabela.getColumnModel().getColumn(4).setPreferredWidth(30);
+		tabela.getColumnModel().getColumn(5).setPreferredWidth(100);
+		tabela.getColumnModel().getColumn(6).setPreferredWidth(110);
+		tabela.getColumnModel().getColumn(7).setPreferredWidth(110);
+		
+		return tabela;
+	}
+	public String excluir(int id, String nome) {
+		String retorno="";
+		InterfaceBanco admPosto=new PostoDeSaudeDAO();
+		
+		retorno=admPosto.excluir(id, nome);
+		
+		return retorno;
+	}
+
+	@Override
+	public String[] listar(String nomePesquisa) {
+		
+		ArrayList<Object> temp = new ArrayList<Object>();
+		PostoDeSaude psf = new PostoDeSaude();
+		String[] listaPSF;
+		
+		PostoDeSaudeDAO admMaterial = new PostoDeSaudeDAO();
+		temp = admMaterial.listar(nomePesquisa);
+		listaPSF = new String[temp.size()];
+		
+		for (int i = 0; i < temp.size(); i++) {
+			psf = (PostoDeSaude) temp.get(i);
+			listaPSF[i] = psf.getNome();
+		}
+		
+		return listaPSF;
+	}
+}
+

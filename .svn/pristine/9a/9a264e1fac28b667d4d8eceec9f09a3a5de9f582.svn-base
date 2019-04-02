@@ -1,0 +1,270 @@
+package admBanco.DAOs;
+
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+
+import javax.swing.JOptionPane;
+
+import basicas.Fornecedor;
+import basicas.Material;
+
+import admBanco.AdmBancoSql;
+import admBanco.InterfaceBanco;
+
+public class MaterialDAO implements InterfaceBanco{
+
+	public String inserir(Object objct) {
+		Material material=(Material)objct;
+		
+		String retorno = "";
+		PreparedStatement ps = null;
+		Connection conn = null;
+		try{
+			String stringSQL = "INSERT INTO Material (idMaterial,descricao,apresentacao,grupo,subGrupo,dataCadastro,precoUnitario) VALUES (?,?,?,?,?,?,?)";
+			
+			conn = AdmBancoSql.getConnection();
+			ps = conn.prepareStatement(stringSQL);
+			
+			ps.setInt(1, material.getIdMaterial());
+			ps.setString(2, material.getDescricao());
+			ps.setString(3, material.getApresentacao());
+			ps.setString(4, material.getGrupo());
+			ps.setString(5, material.getSubGrupo());
+			ps.setDate(6, material.getDataCadastro());
+			ps.setDouble(7, material.getPrecoUnitario());
+			ps.executeUpdate();
+			
+//			JOptionPane.showMessageDialog(null, "Dados cadastrados com sucesso. Cadastro do material: "+ material.getDescricao());
+			retorno = "Dados cadastrados com sucesso. Cadastro do "+material.getGrupo()+": "+material.getDescricao();
+		} catch (SQLException sqle) {
+//			JOptionPane.showMessageDialog(null,"Erro ao inserir os dados");
+			retorno = "Erro ao inserir os dados\n"+sqle.getMessage();
+		} finally {
+			AdmBancoSql.closeConnection(conn, ps, null);
+		}
+		return retorno;	
+	}
+
+	public String excluir(int id, String descricao) {
+		PreparedStatement ps = null;
+		Connection conn = null;
+		String retorno="";
+		
+		try {
+			conn = AdmBancoSql.getConnection();
+			ps = conn.prepareStatement("DELETE FROM Material WHERE idMaterial = ?");
+			ps.setInt(1, id);
+			
+			int statusExclusao=ps.executeUpdate();
+			
+			if (statusExclusao==0)
+//				JOptionPane.showMessageDialog(null, "N"+(char)227+"o foi poss"+(char)237+"vel encontrar o material "+descricao);
+				retorno="Erro!!\nN"+(char)227+"o foi poss"+(char)237+"vel encontrar o material "+descricao;
+			
+			else if (statusExclusao==1)
+//				JOptionPane.showMessageDialog(null, "Material excluido com sucesso. Exclus"+(char)227+"o do material: "+descricao);
+				retorno="Material excluido com sucesso. Exclus"+(char)227+"o do material: "+descricao;
+			
+		} catch (SQLException sqle) {
+//			JOptionPane.showMessageDialog(null, "Ocorreu um erro durante a exclus"+(char)227+"o do material: "+descricao);
+			retorno="Erro durante a exclus"+(char)227+"o do material: "+descricao+"\n"+sqle.getMessage();
+			
+		} finally {
+			AdmBancoSql.closeConnection(conn, ps, null);
+		}
+		
+		return retorno;
+		
+	}
+
+	public String alterar(Object objct) {
+		Material material=(Material)objct;
+		
+		String retorno = "";
+		PreparedStatement ps = null;
+		Connection conn = null;
+		try {
+			String SQL = "UPDATE Material SET descricao=?,apresentacao=?,grupo=?,subGrupo=?,precoUnitario=? WHERE idMaterial=?";
+			
+			conn = AdmBancoSql.getConnection();
+			ps = conn.prepareStatement(SQL);
+			
+			ps.setString(1, material.getDescricao());
+			ps.setString(2, material.getApresentacao());
+			ps.setString(3, material.getGrupo());
+			ps.setString(4, material.getSubGrupo());
+//			ps.setDate(5, material.getDataCadastro());
+			ps.setDouble(5, material.getPrecoUnitario());
+			ps.setInt(7, material.getIdMaterial());
+			
+			int statusExclusao=ps.executeUpdate();
+			
+			if (statusExclusao==0){
+//				JOptionPane.showMessageDialog(null, "N"+(char)227+"o foi poss"+(char)237+"vel encontrar o material "+material.getDescricao());
+				retorno = "N"+(char)227+"o foi poss"+(char)237+"vel encontrar o material "+material.getDescricao();
+				
+			}
+			
+			else if (statusExclusao==1){
+//				JOptionPane.showMessageDialog(null, "Dados atualizados com sucesso do material: "+material.getDescricao());
+				retorno = "Dados atualizados com sucesso do material: "+material.getDescricao();
+			}
+			
+		} catch (SQLException sqle) {
+//			JOptionPane.showMessageDialog(null, "Erro ao alterar os dados do material: "+material.getDescricao());
+			retorno = "Erro ao alterar os dados do material: "+material.getDescricao()+"\n"+sqle.getMessage();
+		} finally {
+			AdmBancoSql.closeConnection(conn, ps, null);
+		}
+		return retorno;
+	}
+
+	public ArrayList<Object> listar(String nomeGrupo) {
+		PreparedStatement ps = null;
+		Connection conn = null;
+		ResultSet result = null;	
+		ArrayList<Object> list = new ArrayList<Object>();
+		try {
+			conn = AdmBancoSql.getConnection();
+			ps = conn.prepareStatement("SELECT * FROM Material WHERE grupo="+"'"+nomeGrupo+"'");
+			result = ps.executeQuery();
+			while( result.next() )
+			{
+				int id_material = result.getInt("idMaterial");
+				String descricao = result.getString("descricao");
+				String apresentacao = result.getString("apresentacao");
+				String grupo = result.getString("grupo");
+				String subGrupo = result.getString("subGrupo");
+				Date dataCadastro = result.getDate("dataCadastro");
+				double precoUnitario = result.getDouble("precoUnitario");
+				
+				list.add(new Material(id_material, descricao, apresentacao, grupo, subGrupo, dataCadastro, precoUnitario));
+			}
+		} catch (SQLException sqle) {
+			JOptionPane.showMessageDialog(null, "Erro durante a consulta!!\n"+sqle.getMessage());
+			
+		} finally {
+			AdmBancoSql.closeConnection(conn, ps, result);
+		}
+		return list;
+	}
+
+	public Object buscar(int id) {
+		PreparedStatement ps = null;
+		Connection conn = null;
+		ResultSet result = null;
+		Material material=null;
+		
+		try {
+			conn = AdmBancoSql.getConnection();
+			ps = conn.prepareStatement("SELECT * FROM Material WHERE idMaterial = ?");
+			ps.setInt(1, id);
+			result = ps.executeQuery();
+			
+			try {
+				while( result.next() ){
+					int id_material = result.getInt("idMaterial");
+					String descricao = result.getString("descricao");
+					String apresentacao = result.getString("apresentacao");
+					String grupo = result.getString("grupo");
+					String subGrupo = result.getString("subGrupo");
+					Date dataCadastro = result.getDate("dataCadastro");
+					double precoUnitario = result.getDouble("precoUnitario");
+					
+					material=new Material(id_material, descricao, apresentacao, grupo, subGrupo, dataCadastro, precoUnitario);
+				}
+				
+			} catch (Exception e) {
+				JOptionPane.showMessageDialog(null, "Material n"+(char)227+"o encontrado");
+				
+			}
+			
+		} catch (SQLException sqle) {
+			JOptionPane.showMessageDialog(null, "Erro durante a busca!!\n"+sqle.getMessage());
+		} finally {
+			AdmBancoSql.closeConnection(conn, ps, result);
+		}
+		return material;
+	}
+	
+
+	public ArrayList<Object> listar(String pesquisarColuna, String organizarPor, String textoPesquisa) {
+		PreparedStatement ps = null;
+		Connection conn = null;
+		ResultSet result = null;	
+		ArrayList<Object> list = new ArrayList<Object>();
+		try {
+			conn = AdmBancoSql.getConnection();
+			ps = conn.prepareStatement("SELECT * FROM Material WHERE "+pesquisarColuna+" LIKE '%"+textoPesquisa+"%' ORDER BY "+organizarPor);
+			result = ps.executeQuery();
+			while( result.next() )
+			{
+				int id_material = result.getInt("idMaterial");
+				String descricao = result.getString("descricao");
+				String apresentacao = result.getString("apresentacao");
+				String grupo = result.getString("grupo");
+				String subGrupo = result.getString("subGrupo");
+				Date dataCadastro = result.getDate("dataCadastro");
+				double precoUnitario = result.getDouble("precoUnitario");
+				
+				list.add(new Material(id_material, descricao, apresentacao, grupo, subGrupo, dataCadastro, precoUnitario));
+			}
+		} catch (SQLException sqle) {
+			JOptionPane.showMessageDialog(null, "Erro durante a consulta!!\n"+sqle.getMessage());
+		} finally {
+			AdmBancoSql.closeConnection(conn, ps, result);
+		}
+		return list;
+		
+	}
+
+	@Override
+	public Object buscar(String descricaoMaterial) {
+		
+		PreparedStatement ps = null;
+		Connection conn = null;
+		ResultSet result = null;
+		Material material=null;
+		
+		try {
+			
+			conn = AdmBancoSql.getConnection();
+			ps = conn.prepareStatement("SELECT * FROM Material WHERE descricao=?");
+			ps.setString(1, descricaoMaterial);
+			
+			result = ps.executeQuery();
+
+			try {
+				
+				while( result.next() ){
+					
+					int idMaterial = result.getInt("idMaterial");
+					String descricao = result.getString("descricao");
+					String apresentacao = result.getString("apresentacao");
+					String grupo = result.getString("grupo");
+					String subgrupo = result.getString("subgrupo");
+					Date dataCadastro = result.getDate("dataCadastro");
+					double precoUnitario = result.getDouble("precoUnitario");
+					
+					material =new Material(idMaterial, descricao, apresentacao, grupo, subgrupo, dataCadastro, precoUnitario);
+				}
+				
+			} catch (Exception e) {
+				JOptionPane.showMessageDialog(null, "Material n"+(char)227+"o encontrado");
+				
+			}
+			
+		} catch (SQLException sqle) {
+			JOptionPane.showMessageDialog(null, "Erro durante a busca!!\n"+sqle.getMessage());
+		} finally {
+			AdmBancoSql.closeConnection(conn, ps, result);
+		}
+		
+		return material;
+		
+	}
+}

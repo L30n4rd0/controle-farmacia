@@ -1,0 +1,60 @@
+package model.erros;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Date;
+
+import model.AdmArquivos;
+
+public class ErroDAOArquivo extends ErroDAO{
+	
+	@Override
+	public void inserir(ErroVO erro) throws Exception {
+//		=new File(new File(System.getProperty("java.class.path")).getParent()+File.separator+"audiosPalavras");
+		File file=new File("erros");
+		
+		if (!file.isDirectory())
+			try {
+				file.mkdir();
+				
+			} catch (Exception e) {
+				throw new Exception("Erro ao criar pasta que armazena os arquivos de erros!");
+			}
+		
+		
+		try {
+			ArrayList<String>conteudoArq=new ArrayList<String>();
+			
+			conteudoArq.add("Codigo do erro: "+erro.getCodigoError());
+			
+			conteudoArq.add("Data de ocorr"+(char)234+"ncia: "+erro.getData());
+			
+			conteudoArq.add("Outras informa"+(char)231+""+(char)245+"es: \n"+erro.getInformacoes());
+			
+			AdmArquivos.salvarArquivo(conteudoArq, "erros"+File.separator+"erro-"+new Date(System.currentTimeMillis())+".txt");
+			
+		} catch (Exception e) {
+			throw new Exception(e.getMessage()+"\nErro ao salvar o arquivo com detalhes na pasta erros.\nEntre em contato com o administrador do sistema!");
+		}
+		
+	}
+
+	@Override
+	public void excluir(int id) throws Exception {
+		
+	}
+
+	@Override
+	public void alterar(ErroVO erro) throws Exception {
+		
+	}
+
+	@Override
+	public ArrayList<ErroVO> listar(String coluna, String organizarPor,
+			String texto) throws Exception {
+		return null;
+	}
+	
+
+
+}

@@ -1,0 +1,159 @@
+package cadastro;
+
+import inicio.TelaInicial;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.UIManager;
+
+import basicas.Usuario;
+
+public class TelaMaterial extends JFrame{
+	private static final long serialVersionUID = 1L;
+	
+	private String grupoMaterial;
+
+	private Usuario nivelUsuario;
+	private DeskPanel_Material panel = null;
+	private JButton btnCadastrar, btnConsultar, btnRegistrarEntrada, btnRegistrarSaida, btnVoltar;
+	private String grupo;
+	private Usuario nivel;
+	
+	public TelaMaterial(final String grupoMaterial, final Usuario nivelUsuario) {
+		super("Controle "+grupoMaterial);
+		
+		UIManager.put("DesktopPaneUI","javax.swing.plaf.basic.BasicDesktopPaneUI");
+		try {
+			javax.swing.UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		
+		nivel = new Usuario();
+		grupo = grupoMaterial;
+		nivel = nivelUsuario;
+		
+		this.grupoMaterial = grupoMaterial;
+		this.nivelUsuario=nivelUsuario;
+		
+		
+		btnCadastrar = new JButton("Cadastrar");
+		btnCadastrar.setBounds(311, 34, 107, 25);
+		getContentPane().add(btnCadastrar);
+		
+		btnConsultar = new JButton("Consulta");
+		btnConsultar.setBounds(430, 34, 89, 25);
+		getContentPane().add(btnConsultar);
+		
+		btnRegistrarEntrada = new JButton("Registrar Entrada");
+		btnRegistrarEntrada.setBounds(10, 34, 145, 25);
+		getContentPane().add(btnRegistrarEntrada);
+		
+		btnRegistrarSaida = new JButton("Registrar Sa"+(char)237+"da");
+		btnRegistrarSaida.setBounds(167, 34, 132, 25);
+		getContentPane().add(btnRegistrarSaida);
+		
+		btnVoltar = new JButton("Voltar");
+		btnVoltar.setBounds(531, 33, 100, 25);
+		getContentPane().add(btnVoltar);
+
+
+		btnRegistrarEntrada.addActionListener(new ActionListener() {
+			
+			public void actionPerformed(ActionEvent arg0) {
+				
+				setTitle("Registrar Entrada de "+TelaMaterial.this.grupoMaterial);
+				
+				if(panel != null){
+					panel.setControle(false);
+					TelaMaterial.this.remove(panel);
+				}
+				
+				panel = new DeskPanel_Material(grupo, nivel,1);
+				TelaMaterial.this.add(panel);
+				panel.repaint();
+				
+				
+			}
+		});
+
+		
+		btnRegistrarSaida.addActionListener(new ActionListener() {
+			
+			
+			public void actionPerformed(ActionEvent arg0) {
+				
+				setTitle("Registrar Sa"+(char)237+"da de "+TelaMaterial.this.grupoMaterial);
+				
+				if(panel != null){
+					panel.setControle(false);
+					TelaMaterial.this.remove(panel);
+				}
+				
+				panel = new DeskPanel_Material(grupo, nivel,2);
+				TelaMaterial.this.add(panel);
+				panel.repaint();
+			}
+		});
+
+		
+		btnCadastrar.addActionListener(new ActionListener() {
+			
+			public void actionPerformed(ActionEvent arg0) {
+				setTitle("Cadastrar "+TelaMaterial.this.grupoMaterial);
+				
+				if(panel != null){
+					panel.setControle(false);
+					TelaMaterial.this.remove(panel);
+				}
+				
+				panel = new DeskPanel_Material(grupo, nivel,3);
+				TelaMaterial.this.add(panel);
+				panel.repaint();
+
+			
+			}
+		});
+		
+		btnVoltar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				panel.setControle(false);
+				dispose();
+				new TelaInicial(nivelUsuario);
+				
+			}
+		});
+		
+		setSize(800, 600);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setResizable(false);
+		getContentPane().setLayout(null);
+
+		setLocationRelativeTo(null);
+		setVisible(true);
+		
+	}
+
+	public String getGrupoMaterial() {
+		return grupoMaterial;
+	}
+	
+	public Usuario getNivelUsuario() {
+		return nivelUsuario;
+	}
+	
+	public DeskPanel_Material getPanel() {
+		return panel;
+	}
+	public void setPanel(DeskPanel_Material panel) {
+		this.panel = panel;
+	}
+	
+	public String teste() {
+		return "frfrfrfr";
+		
+	}
+}

@@ -1,0 +1,16 @@
+package ControleNegocios.interfaces;
+
+import java.util.ArrayList;
+
+import javax.swing.JTable;
+
+public interface InterfaceControleSubgrupo {
+	public String verificarDados(String nome);
+	public String salvar(String nome);
+	public String excluir(String nome);
+	public String alterar(String nomeAtualNomeNovo);
+	public JTable obterTabela(String textoPesquisa);
+	public String[] listar(String nomePesquisa);
+
+}
+

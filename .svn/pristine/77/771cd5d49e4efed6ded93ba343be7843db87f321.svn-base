@@ -1,0 +1,11 @@
+package model.saida;
+
+import java.util.ArrayList;
+
+public abstract class SaidaDAO {
+	public abstract void inserir(SaidaVO saida) throws Exception;
+	public abstract void excluir(int id, String nome) throws Exception;
+	public abstract void alterar(SaidaVO saida) throws Exception;
+	public abstract ArrayList<SaidaVO> listar(String coluna, String organizarPor, String texto) throws Exception;
+
+}

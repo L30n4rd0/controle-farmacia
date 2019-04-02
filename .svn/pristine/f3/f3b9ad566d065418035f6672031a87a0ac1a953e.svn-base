@@ -1,0 +1,155 @@
+package cadastro;
+import javax.swing.JLabel;
+
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.text.ParseException;
+import java.util.Arrays;
+
+import javax.swing.JFormattedTextField;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.JComboBox;
+import javax.swing.JButton;
+import javax.swing.text.MaskFormatter;
+
+import basicas.PostoDeSaude;
+
+import ControleNegocios.ControlePostoDeSaude;
+import ControleNegocios.interfaces.InterfaceControlePosto;
+
+public class TelaCadastroPosto extends TelaCadastro{
+	
+	private static final long serialVersionUID = 1L;
+	private JTextField textFieldNome, textFieldCidade, textFieldBairro, textFieldCEP, textFieldFone;
+	private MaskFormatter mascaraCep, mascaraFone;
+	private JComboBox <String> comboBoxUF;
+	
+	public TelaCadastroPosto(final PostoDeSaude edtarPosto) {
+		setTitle("Cadastro de Posto de Sa"+(char)250+"de");
+		
+		JLabel lblNome = new JLabel("Nome");
+		lblNome.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		lblNome.setBounds(38, 38, 49, 20);
+		panel.add(lblNome);
+		
+		textFieldNome = new JTextField();
+		textFieldNome.setBounds(99, 33, 262, 28);
+		textFieldNome.setColumns(10);
+		panel.add(textFieldNome);
+		
+		JLabel lblCidade = new JLabel("Cidade");
+		lblCidade.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		lblCidade.setBounds(33, 77, 54, 20);
+		panel.add(lblCidade);
+		
+		textFieldCidade = new JTextField();
+		textFieldCidade.setBounds(99, 72, 196, 28);
+		textFieldCidade.setColumns(10);
+		panel.add(textFieldCidade);
+		
+		JLabel lblBairro = new JLabel("Bairro");
+		lblBairro.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		lblBairro.setBounds(38, 116, 49, 20);
+		panel.add(lblBairro);
+		
+		textFieldBairro = new JTextField();
+		textFieldBairro.setBounds(99, 111, 149, 28);
+		textFieldBairro.setColumns(10);
+		panel.add(textFieldBairro);
+		
+		JLabel lblUf = new JLabel("UF");
+		lblUf.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		lblUf.setBounds(61, 155, 26, 20);
+		panel.add(lblUf);
+		
+		Arrays.sort(getEstados());
+		comboBoxUF = new JComboBox<String>(getEstados());
+//		comboBoxUF = new JComboBox(getEstados());
+		comboBoxUF.setBounds(99, 155, 54, 20);
+		comboBoxUF.setSelectedItem(getEstados()[15]);
+		panel.add(comboBoxUF);
+		
+		
+		JLabel lblCep = new JLabel("CEP");
+		lblCep.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		lblCep.setBounds(46, 191, 28, 20);
+		panel.add(lblCep);
+		
+		try {
+			
+			mascaraCep = new MaskFormatter("#####-###");
+			mascaraCep.setPlaceholderCharacter('_');
+			textFieldCEP = new JFormattedTextField(mascaraCep);
+			textFieldCEP.setBounds(99, 186, 86, 28);
+			textFieldCEP.setColumns(10);
+			panel.add(textFieldCEP);
+			
+		} catch (ParseException e) {e.printStackTrace();}
+		
+		JLabel lblFone = new JLabel("Fone");
+		lblFone.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		lblFone.setBounds(43, 230, 44, 20);
+		panel.add(lblFone);
+		
+		try {
+			
+			mascaraFone = new MaskFormatter("(##)####-####");
+			mascaraFone.setPlaceholderCharacter('_');
+			textFieldFone = new JFormattedTextField(mascaraFone);
+			textFieldFone.setBounds(99, 225, 112, 28);
+			textFieldFone.setColumns(10);
+			panel.add(textFieldFone);
+			
+		} catch (ParseException e) {e.printStackTrace();}
+		
+		if (edtarPosto!=null) {
+			textFieldNome.setText(edtarPosto.getNome());
+			textFieldCEP.setText(edtarPosto.getCEP());
+			textFieldBairro.setText(edtarPosto.getBairro());
+			textFieldCidade.setText(edtarPosto.getCidade());
+			textFieldFone.setText(edtarPosto.getFone());
+			comboBoxUF.setSelectedItem(edtarPosto.getUF());
+			
+		}
+		
+		JButton btnSalvar = new JButton("Salvar");
+		btnSalvar.setBounds(268, 302, 100, 34);
+		btnSalvar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				String resultado=null;
+				
+				InterfaceControlePosto controlePosto=new ControlePostoDeSaude();
+				
+				if (edtarPosto!=null) {
+					resultado=controlePosto.alterar(edtarPosto.getIdPSF(), textFieldNome.getText(), textFieldCidade.getText(), textFieldBairro.getText(), comboBoxUF.getSelectedItem().toString(), textFieldCEP.getText(), textFieldFone.getText(), null);
+					
+				}else {
+					resultado = controlePosto.salvar(textFieldNome.getText(), textFieldCidade.getText(), textFieldBairro.getText(), comboBoxUF.getSelectedItem().toString(), textFieldCEP.getText(), textFieldFone.getText());
+					
+				}
+				
+				if (resultado.substring(0, 4).equals("Erro")) {
+					JOptionPane.showMessageDialog(null, resultado, "Aten"+(char)231+""+(char)227+"o", JOptionPane.ERROR_MESSAGE);
+				}else {
+					JOptionPane.showMessageDialog(null, resultado, "Informa"+(char)231+""+(char)227+"o", JOptionPane.INFORMATION_MESSAGE);
+					dispose();
+				}
+				
+			}
+		});
+		
+		panel.add(btnSalvar);
+		
+		panel.repaint();
+		setVisible(true);
+		
+	}
+	
+//	public static void main(String[] args) {
+//		new TelaCadastroPosto();
+//	}
+}

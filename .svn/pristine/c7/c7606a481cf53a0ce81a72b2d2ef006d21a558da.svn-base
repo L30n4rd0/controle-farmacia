@@ -1,0 +1,18 @@
+package model.erros;
+
+import java.util.ArrayList;
+
+import model.fabricaDAOS.FabricaDAOS;
+
+public class ObservadorBanco extends Observador{
+
+	@Override
+	public void processarErro(ArrayList<ErroVO> erros) throws Exception{
+		FabricaDAOS fabrica=FabricaDAOS.getFabricaDAOS();
+		
+		ErroDAO erroDAO=fabrica.criarErroDAO();
+			
+		erroDAO.inserir(erros);
+			
+	}
+}

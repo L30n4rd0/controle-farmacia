@@ -1,0 +1,18 @@
+package ControleNegocios.interfaces;
+
+import java.util.ArrayList;
+
+import javax.swing.JTable;
+
+import basicas.Material;
+
+public interface InterfaceControleMaterial {
+
+	public String salvar(String descricao, String apresentacao, String grupo, String subGrupo, String precoUnitario );
+	public String verificarDados(String descricao, String apresentacao, String grupo, String subGrupo, String precoUnitario);
+	public JTable obterTabela(String dataIncial, String dataFinal, String psf, boolean consultarCadastrados, String pesquisarPor, String organizarPor, String textoPesquisa, String grupo);
+	public Object buscar(String material);
+	public String excluir(int id, String descricao);
+	public String[] listar(String nomeGrupo);
+	public String alterar();
+}

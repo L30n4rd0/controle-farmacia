@@ -1,0 +1,263 @@
+package admBanco.DAOs;
+
+
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+
+import javax.swing.JOptionPane;
+
+import basicas.Fornecedor;
+
+import admBanco.AdmBancoSql;
+import admBanco.InterfaceBanco;
+
+public class FornecedorDAO implements InterfaceBanco{
+
+	public String inserir(Object objct) {
+		Fornecedor fornecedor=(Fornecedor)objct;
+		
+		String retorno = "";
+		PreparedStatement ps = null;
+		Connection conn = null;
+		
+		try{
+			String stringSQL="INSERT INTO Fornecedor (idFornecedor,nome,cidade,uf,cnpj,inscricao,dataCadastro) VALUES (?,?,?,?,?,?,?)";
+			
+			conn = AdmBancoSql.getConnection();
+			ps = conn.prepareStatement(stringSQL);
+			
+			ps.setInt(1, fornecedor.getIdFornecedor());
+			ps.setString(2, fornecedor.getNome());
+			ps.setString(3, fornecedor.getCidade());
+			ps.setString(4, fornecedor.getUf());
+			ps.setString(5, fornecedor.getCnpj());
+			ps.setString(6, fornecedor.getInscricao());
+			ps.setDate(7, fornecedor.getDataCadastro());
+			ps.executeUpdate();
+			
+			retorno = "Dados cadastrados com sucesso. Cadastro do fornecedor: "+ fornecedor.getNome();
+		} catch (SQLException sqle) {
+			retorno = "Erro ao inserir os dados\n"+sqle.getMessage();
+		} finally {
+			AdmBancoSql.closeConnection(conn, ps, null);
+		}
+		return retorno;
+	}
+
+	public String excluir(int id, String nome) {
+		PreparedStatement ps = null;
+		Connection conn = null;
+		String retorno=null;
+		try {
+			conn = AdmBancoSql.getConnection();
+			ps = conn.prepareStatement("DELETE FROM Fornecedor WHERE idFornecedor = ?");
+			ps.setInt(1, id);
+			
+			int statusExclusao=ps.executeUpdate();
+			
+			if (statusExclusao==0)
+				retorno="Erro!!\nN"+(char)227+"o foi poss"+(char)237+"vel encontrar o fornecedor: "+nome;
+//				JOptionPane.showMessageDialog(null, "N"+(char)227+"o foi poss"+(char)237+"vel encontrar o fornecedor: "+nome);
+			
+			else if (statusExclusao==1)
+				retorno="Fornecedor excluido com sucesso. Exclus"+(char)227+"o do fornecedor: "+nome;
+				
+//				JOptionPane.showMessageDialog(null, "Fornecedor excluido com sucesso. Exclus"+(char)227+"o do fornecedor: "+nome);
+			
+		} catch (SQLException sqle) {
+			retorno="Erro durante a exclus"+(char)227+"o do fornecedor: "+nome+"\n"+sqle.getMessage();
+//			JOptionPane.showMessageDialog(null, "Erro durante a exclus"+(char)227+"o do fornecedor: "+nome+"\n"+sqle.getMessage());
+		} finally {
+			AdmBancoSql.closeConnection(conn, ps, null);
+		}
+		
+		return retorno;
+		
+	}
+
+	public String alterar(Object objct) {
+		Fornecedor fornecedor=(Fornecedor)objct;
+		
+		String retorno = "";
+		PreparedStatement ps = null;
+		Connection conn = null;
+		try {
+			String SQL = "UPDATE Fornecedor SET nome=?,cidade=?,uf=?,cnpj=?,inscricao=? WHERE idFornecedor=?";
+			
+			conn = AdmBancoSql.getConnection();
+			ps = conn.prepareStatement(SQL);
+			
+			ps.setString(1, fornecedor.getNome());
+			ps.setString(2, fornecedor.getCidade());
+			ps.setString(3, fornecedor.getUf());
+			ps.setString(4, fornecedor.getCnpj());
+			ps.setString(5, fornecedor.getInscricao());
+//			ps.setDate(6, fornecedor.getDataCadastro());
+			ps.setInt(6, fornecedor.getIdFornecedor());
+			
+			int statusExclusao=ps.executeUpdate();
+			
+			if (statusExclusao==0){
+//				JOptionPane.showMessageDialog(null, "N"+(char)227+"o foi poss"+(char)237+"vel encontrar o fornecedor: "+fornecedor.getNome());
+				retorno = "N"+(char)227+"o foi poss"+(char)237+"vel encontrar o fornecedor: "+fornecedor.getNome();
+				
+			}
+			
+			else if (statusExclusao==1){
+//				JOptionPane.showMessageDialog(null, "Dados atualizados com sucesso do fornecedor: "+fornecedor.getNome());
+				retorno = "Dados atualizados com sucesso do fornecedor: "+fornecedor.getNome();
+			}
+			
+		} catch (SQLException sqle) {
+//			JOptionPane.showMessageDialog(null, "Erro ao alterar os dados do fornecedor: "+fornecedor.getNome());
+			retorno = "Erro ao alterar os dados do fornecedor: "+fornecedor.getNome()+"\n"+sqle.getMessage();
+		} finally {
+			AdmBancoSql.closeConnection(conn, ps, null);
+		}
+		return retorno;
+	}
+
+	public ArrayList<Object> listar(String nomePesquisa) {
+		PreparedStatement ps = null;
+		Connection conn = null;
+		ResultSet result = null;
+		
+		ArrayList<Object> list = new ArrayList<Object>();
+		try {
+			conn = AdmBancoSql.getConnection();
+			ps = conn.prepareStatement("SELECT * FROM Fornecedor ORDER BY "+nomePesquisa);
+			result = ps.executeQuery();
+			while( result.next() )
+			{
+				int idFornecedor = result.getInt("idFornecedor");
+				String nome = result.getString("nome");
+				String cidade = result.getString("cidade");
+				String uf = result.getString("uf");
+				String cnpj = result.getString("cnpj");
+				String inscricao = result.getString("inscricao");
+				Date dataCadastro = result.getDate("dataCadastro");
+				
+				list.add(new Fornecedor(idFornecedor, nome, cidade, uf, cnpj, inscricao, dataCadastro));
+			}
+		} catch (SQLException sqle) {
+			JOptionPane.showMessageDialog(null, "Ocorreu um erro durante a consulta!!");
+		} finally {
+			AdmBancoSql.closeConnection(conn, ps, result);
+		}
+		return list;
+		
+	}
+
+	public Object buscar(int id) {
+		PreparedStatement ps = null;
+		Connection conn = null;
+		ResultSet result = null;
+		Fornecedor fornecedor=null;
+		
+		try {
+			conn = AdmBancoSql.getConnection();
+			ps = conn.prepareStatement("SELECT * FROM Fornecedor WHERE idFornecedor=?");
+			ps.setInt(1, id);
+			result = ps.executeQuery();
+			
+			try {
+				while( result.next() ){
+					int idFornecedor = result.getInt("idFornecedor");
+					String nome = result.getString("nome");
+					String cidade = result.getString("cidade");
+					String uf = result.getString("uf");
+					String cnpj = result.getString("cnpj");
+					String inscricao = result.getString("inscricao");
+					Date dataCadastro = result.getDate("dataCadastro");
+					
+					fornecedor =new Fornecedor(idFornecedor, nome, cidade, uf, cnpj, inscricao, dataCadastro);
+				}
+				
+			} catch (Exception e) {
+				JOptionPane.showMessageDialog(null, "Fornecedor n"+(char)227+"o encontrado");
+				
+			}
+			
+		} catch (SQLException sqle) {
+			JOptionPane.showMessageDialog(null, "Ocorreu um erro durante a busca!!");
+		} finally {
+			AdmBancoSql.closeConnection(conn, ps, result);
+		}
+		return fornecedor;
+	}
+	
+	public Object buscar(String nomeFornecedor) {
+		PreparedStatement ps = null;
+		Connection conn = null;
+		ResultSet result = null;
+		Fornecedor fornecedor=null;
+		
+		try {
+			conn = AdmBancoSql.getConnection();
+			ps = conn.prepareStatement("SELECT * FROM Fornecedor WHERE nome=?");
+			ps.setString(1, nomeFornecedor);
+			result = ps.executeQuery();
+			
+			try {
+				while( result.next() ){
+					int idFornecedor = result.getInt("idFornecedor");
+					String nome = result.getString("nome");
+					String cidade = result.getString("cidade");
+					String uf = result.getString("uf");
+					String cnpj = result.getString("cnpj");
+					String inscricao = result.getString("inscricao");
+					Date dataCadastro = result.getDate("dataCadastro");
+					
+					fornecedor =new Fornecedor(idFornecedor, nome, cidade, uf, cnpj, inscricao, dataCadastro);
+				}
+				
+			} catch (Exception e) {
+				JOptionPane.showMessageDialog(null, "Fornecedor n"+(char)227+"o encontrado");
+				
+			}
+			
+		} catch (SQLException sqle) {
+			JOptionPane.showMessageDialog(null, "Ocorreu um erro durante a busca!!");
+		} finally {
+			AdmBancoSql.closeConnection(conn, ps, result);
+		}
+		return fornecedor;
+	}
+
+	public ArrayList<Object> listar(String pesquisarColuna, String organizarPor, String textoPesquisa) {
+		PreparedStatement ps = null;
+		Connection conn = null;
+		ResultSet result = null;
+		
+		ArrayList<Object> list = new ArrayList<Object>();
+		try {
+			conn = AdmBancoSql.getConnection();
+			ps = conn.prepareStatement("SELECT * FROM Fornecedor WHERE "+pesquisarColuna+" LIKE '%"+textoPesquisa+"%' ORDER BY "+organizarPor);
+			result = ps.executeQuery();
+			while( result.next() )
+			{
+//				SELECT * FROM Farmacia.PSF WHERE nome LIKE '%sa%' ORDER BY cidade
+				int idFornecedor = result.getInt("idFornecedor");
+				String nome = result.getString("nome");
+				String cidade = result.getString("cidade");
+				String uf = result.getString("uf");
+				String cnpj = result.getString("cnpj");
+				String inscricao = result.getString("inscricao");
+				Date dataCadastro = result.getDate("dataCadastro");
+				
+				list.add(new Fornecedor(idFornecedor, nome, cidade, uf, cnpj, inscricao, dataCadastro));
+			}
+			
+		} catch (SQLException sqle) {
+			JOptionPane.showMessageDialog(null, "Ocorreu um erro durante a consulta!!\n"+sqle.getMessage());
+		} finally {
+			AdmBancoSql.closeConnection(conn, ps, result);
+		}
+		return list;
+	}
+
+}

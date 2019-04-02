@@ -1,0 +1,39 @@
+package basicas;
+
+public class Usuario {
+	private String nome, login, senha, nivel;
+	private int idUsuario;
+	
+	public Usuario(int idUsuario, String nome, String login, String senha, String nivel) {
+		this.idUsuario=idUsuario;
+		this.nome=nome;
+		this.login=login;
+		this.senha=senha;
+		this.nivel=nivel;
+		
+	}
+	
+	public Usuario(){
+		
+	}
+
+	public String getNome() {
+		return this.nome;
+	}
+
+	public String getLogin() {
+		return this.login;
+	}
+
+	public String getSenha() {
+		return this.senha;
+	}
+
+	public String getNivel() {
+		return this.nivel;
+	}
+
+	public int getIdUsuario() {
+		return this.idUsuario;
+	}
+}

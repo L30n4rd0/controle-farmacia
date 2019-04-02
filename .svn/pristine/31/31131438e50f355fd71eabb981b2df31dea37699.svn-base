@@ -1,0 +1,87 @@
+package consultas;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+
+import javax.swing.JOptionPane;
+
+import basicas.Usuario;
+
+import cadastro.TelaCadastroSubgrupo;
+import ControleNegocios.ControleSubgrupo;
+import ControleNegocios.interfaces.InterfaceControleSubgrupo;
+
+public class TelaConsultaSubgrupo extends TelaConsulta{
+	private static final long serialVersionUID = 1L;
+	private InterfaceControleSubgrupo controleSubgrupo;
+	
+	public TelaConsultaSubgrupo(Usuario userLogado) {
+		super(userLogado);
+		setTitle("Subgrupo");
+		
+		controleSubgrupo=new ControleSubgrupo();
+		getComboBoxPesquisa().addItem("Nome");
+		
+		getComboBoxOrganiza().addItem("Nome");
+		
+		getTextFieldPesquisa().setText("");
+		
+		atualizaTabela(getTextFieldPesquisa().getText());
+		
+		setVisible(true);
+		
+	}
+	
+	public void actionPerformed(ActionEvent e) {
+		if (e.getSource()==getBtnDeletar()) {
+			if (getTabela().getSelectedRow()==-1) {
+				JOptionPane.showMessageDialog(null, "Por favor selecione uma linha.");
+				
+			}else {
+				
+				String resultado=controleSubgrupo.excluir(getTabela().getValueAt(getTabela().getSelectedRow(), 0).toString());
+				
+				if (resultado.substring(0, 4).equals("Erro")) {
+					JOptionPane.showMessageDialog(null, resultado, "Erro", JOptionPane.ERROR_MESSAGE);
+					
+				}else {
+					JOptionPane.showMessageDialog(null, resultado, "Informa"+(char)231+""+(char)227+"o", JOptionPane.INFORMATION_MESSAGE);
+				}
+				
+				atualizaTabela(getTextFieldPesquisa().getText());
+			}
+		}else if (e.getSource()==getBtnEditar()) {
+			if (getTabela().getSelectedRow()==-1) {
+				JOptionPane.showMessageDialog(null, "Por favor selecione uma linha.");
+			}
+			else {
+				new TelaCadastroSubgrupo(getTabela().getValueAt(getTabela().getSelectedRow(), 0).toString());//nome do posto selecionado)
+				
+				atualizaTabela(getTextFieldPesquisa().getText());
+				
+			}
+		}
+	}
+	
+	public void keyReleased(KeyEvent e) {
+		if (e.getSource()==getTextFieldPesquisa()) {
+			atualizaTabela(getTextFieldPesquisa().getText());
+		}
+		
+	}
+	
+	public void atualizaTabela(String textoPesquisa) {
+		try {
+			remove(getScrollPane());
+			
+		} catch (Exception e) {}
+		
+		setTabela(controleSubgrupo.obterTabela(textoPesquisa));
+		
+		getScrollPane().setViewportView(getTabela());
+		getScrollPane().repaint();
+		add(getScrollPane());
+		
+	}
+	
+}

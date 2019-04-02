@@ -1,0 +1,9 @@
+Erro ao inserir os dados do Fornecedor Leonardo
+LocalizedMessage: Table 'bdfarmacia.Dornecedor' doesn't exist
+SQLExceptionMessage:Table 'bdfarmacia.Dornecedor' doesn't exist
+SQLState: 42S02
+Cause: null
+Class: class com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException
+NextException: null
+StackTrace: [Ljava.lang.StackTraceElement;@6bf15d27
+Suppressed: [Ljava.lang.Throwable;@331ae2ce

@@ -1,0 +1,17 @@
+package model.psf;
+
+import model.fabricaDAOS.FabricaDAOS;
+
+public class PsfBO {
+	
+	public void inserir(PsfVO psf) throws Exception {
+		PsfDAO psfDAO=FabricaDAOS.getFabricaDAOS().criarPsfDAO();
+		psfDAO.inserir(psf);
+		
+	}
+	
+	public void alterar(PsfVO psf) throws Exception {
+		
+	}
+
+}

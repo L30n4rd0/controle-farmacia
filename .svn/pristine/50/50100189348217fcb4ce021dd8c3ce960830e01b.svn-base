@@ -1,0 +1,267 @@
+package admBanco.DAOs;
+
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+
+import javax.swing.JOptionPane;
+
+import basicas.Usuario;
+
+import admBanco.AdmBancoSql;
+import admBanco.InterfaceBanco;
+
+public class UsuarioDAO implements InterfaceBanco{
+
+	public String inserir(Object objct) {
+		Usuario usuario=(Usuario)objct;
+		
+		String retorno = "";
+		PreparedStatement ps = null;
+		Connection conn = null;
+		
+		try{
+			String stringSQL = "INSERT INTO Usuario (idUsuario,nome,login,senha,nivel) VALUES (?,?,?,?,?)";
+			
+			conn = AdmBancoSql.getConnection();
+			ps = conn.prepareStatement(stringSQL);
+			
+			ps.setInt(1, usuario.getIdUsuario());
+			ps.setString(2, usuario.getNome());
+			ps.setString(3, usuario.getLogin());
+			ps.setString(4, usuario.getSenha());
+			ps.setString(5, usuario.getNivel());
+			ps.executeUpdate();
+			
+//			JOptionPane.showMessageDialog(null, "Dados cadastrados com sucesso. Cadastro do usu"+(char)225+"rio: "+ usuario.getNome());
+			retorno = "Dados cadastrados com sucesso. Cadastro do usu"+(char)225+"rio: "+ usuario.getNome();
+		} catch (SQLException sqle) {
+//			JOptionPane.showMessageDialog(null,"Erro ao inserir os dados");
+			retorno = "Erro ao inserir os dados\n"+sqle.getMessage();
+		} finally {
+			AdmBancoSql.closeConnection(conn, ps, null);
+		}
+		
+		if (retorno.contains("Duplicate")) {
+			retorno="Erro j"+(char)225+" existe um usu"+(char)225+"rio usando este Login.";
+			
+		}
+		return retorno;
+		
+	}
+
+	public String excluir(int id, String nome) {
+		String retorno="";
+		
+		if (((Usuario)buscar(id)).getNivel().equalsIgnoreCase("administrador") && obterQuantidadeDeAdministradores()<2) {
+			
+			retorno="Erro!!\nEste usu"+(char)225+"rio n"+(char)227+"o pode ser excluido.\nO sistema tem que ter pelo menos um usu"+(char)225+"rio adminstrador.";
+			
+		}
+		
+		if (retorno.equals("")) {
+			PreparedStatement ps = null;
+			Connection conn = null;
+			
+			try {
+				conn = AdmBancoSql.getConnection();
+				ps = conn.prepareStatement("DELETE FROM Usuario WHERE idUsuario=?");
+				ps.setInt(1, id);
+				
+				int statusExclusao=ps.executeUpdate();
+				
+				if (statusExclusao==0)
+//				JOptionPane.showMessageDialog(null, "N"+(char)227+"o foi poss"+(char)237+"vel encontrar o usu"+(char)225+"rio "+nome);
+					retorno="Erro!!\nN"+(char)227+"o foi poss"+(char)237+"vel encontrar o usu"+(char)225+"rio "+nome;
+				
+				else if (statusExclusao==1)
+//				JOptionPane.showMessageDialog(null, "Usu"+(char)225+"rio excluido com sucesso. Exclus"+(char)227+"o do Usu"+(char)225+"rio: "+nome);
+					retorno="Usu"+(char)225+"rio excluido com sucesso. Exclus"+(char)227+"o do Usu"+(char)225+"rio: "+nome;
+				
+			} catch (SQLException sqle) {
+//			JOptionPane.showMessageDialog(null, "Ocorreu um erro durante a exclus"+(char)227+"o do usu"+(char)225+"rio: "+nome+"\n"+sqle.getMessage());
+				retorno="Erro durante a exclus"+(char)227+"o do usu"+(char)225+"rio: "+nome+"\n"+sqle.getMessage();
+			} finally {
+				AdmBancoSql.closeConnection(conn, ps, null);
+			}
+			
+		}
+		
+		return retorno;
+		
+	}
+
+	public String alterar(Object objct) {
+		Usuario usuario=(Usuario)objct;
+		
+		String retorno = "";
+		PreparedStatement ps = null;
+		Connection conn = null;
+		try {
+			String SQL = "UPDATE Usuario SET nome=?,login=?,senha=?,nivel=? WHERE idUsuario=?";
+			
+			conn = AdmBancoSql.getConnection();
+			ps = conn.prepareStatement(SQL);
+			
+			ps.setString(1, usuario.getNome());
+			ps.setString(2, usuario.getLogin());
+			ps.setString(3, usuario.getSenha());
+			ps.setString(4, usuario.getNivel());
+			ps.setInt(5, usuario.getIdUsuario());
+			
+			int statusExclusao=ps.executeUpdate();
+			
+			if (statusExclusao==0){
+//				JOptionPane.showMessageDialog(null, "N"+(char)227+"o foi poss"+(char)237+"vel encontrar o usu"+(char)225+"rio "+usuario.getNome());
+				retorno = "N"+(char)227+"o foi poss"+(char)237+"vel encontrar o usu"+(char)225+"rio "+usuario.getNome();
+				
+			}
+			
+			else if (statusExclusao==1){
+//				JOptionPane.showMessageDialog(null, "Dados atualizados com sucesso do usu"+(char)225+"rio: "+usuario.getNome());
+				retorno = "Dados atualizados com sucesso do usu"+(char)225+"rio: "+usuario.getNome();
+			}
+			
+		} catch (SQLException sqle) {
+//			JOptionPane.showMessageDialog(null, "Erro ao alterar os dados do usu"+(char)225+"rio: "+usuario.getNome());
+			retorno = "Erro ao alterar os dados do usu"+(char)225+"rio: "+usuario.getNome()+"\n"+sqle.getMessage();
+		} finally {
+			AdmBancoSql.closeConnection(conn, ps, null);
+		}
+		return retorno;
+		
+	}
+
+	public ArrayList<Object> listar(String coluna) {
+		PreparedStatement ps = null;
+		Connection conn = null;
+		ResultSet result = null;
+		
+		ArrayList<Object> list = new ArrayList<Object>();
+		try {
+			conn = AdmBancoSql.getConnection();
+			ps = conn.prepareStatement("SELECT * FROM Usuario ORDER BY "+coluna);
+			result = ps.executeQuery();
+			while( result.next() )
+			{
+				int id_usuario = result.getInt("idUsuario");
+				String nome = result.getString("nome");
+				String nomeLogin = result.getString("login");
+				String senha = result.getString("senha");
+				String nivel = result.getString("nivel");
+				
+				list.add(new Usuario(id_usuario, nome, nomeLogin, senha, nivel));
+			}
+		} catch (SQLException sqle) {
+			JOptionPane.showMessageDialog(null, "Ocorreu um erro durante a consulta!!");
+		} finally {
+			AdmBancoSql.closeConnection(conn, ps, result);
+		}
+		return list;
+	}
+
+	public Usuario buscar(int id) {
+		PreparedStatement ps = null;
+		Connection conn = null;
+		ResultSet result = null;
+		Usuario usuario=null;
+		
+		try {
+			conn = AdmBancoSql.getConnection();
+			ps = conn.prepareStatement("SELECT * FROM Usuario WHERE idUsuario=?");
+			ps.setInt(1, id);
+			result = ps.executeQuery();
+			
+			try {
+				while( result.next() ){
+					int id_usuario = result.getInt("idUsuario");
+					String nome = result.getString("nome");
+					String nomeLogin = result.getString("login");
+					String senha = result.getString("senha");
+					String nivel = result.getString("nivel");
+					
+					usuario =new Usuario(id_usuario, nome, nomeLogin, senha, nivel);
+				}
+				
+			} catch (Exception e) {
+				JOptionPane.showMessageDialog(null, "Usu"+(char)225+"rio n"+(char)227+"o encontrado");
+				
+			}
+			
+		} catch (SQLException sqle) {
+			JOptionPane.showMessageDialog(null, "Ocorreu um erro durante a busca!!");
+		} finally {
+			AdmBancoSql.closeConnection(conn, ps, result);
+		}
+		return usuario;
+	}
+
+	public ArrayList<Object> listar(String pesquisarColuna, String organizarPor, String textoPesquisa) {
+		PreparedStatement ps = null;
+		Connection conn = null;
+		ResultSet result = null;
+		
+		ArrayList<Object> list = new ArrayList<Object>();
+		try {
+			conn = AdmBancoSql.getConnection();
+			ps = conn.prepareStatement("SELECT * FROM Usuario WHERE "+pesquisarColuna+" LIKE '%"+textoPesquisa+"%' ORDER BY "+organizarPor);
+			result = ps.executeQuery();
+			while( result.next() )
+			{
+				int id_usuario = result.getInt("idUsuario");
+				String nome = result.getString("nome");
+				String nomeLogin = result.getString("login");
+				String senha = result.getString("senha");
+				String nivel = result.getString("nivel");
+				
+				list.add(new Usuario(id_usuario, nome, nomeLogin, senha, nivel));
+			}
+		} catch (SQLException sqle) {
+			JOptionPane.showMessageDialog(null, "Ocorreu um erro durante a consulta!!\n"+sqle.getMessage());
+		} finally {
+			AdmBancoSql.closeConnection(conn, ps, result);
+		}
+		return list;
+	}
+
+	@Override
+	public Object buscar(String nome) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	public int obterQuantidadeDeAdministradores() {
+		PreparedStatement ps = null;
+		Connection conn = null;
+		ResultSet result = null;
+		int retorno = 0;
+		try {
+			conn = AdmBancoSql.getConnection();
+			ps = conn.prepareStatement("SELECT COUNT(*) FROM Usuario WHERE nivel=?");
+			ps.setString(1, "Administrador");
+			result = ps.executeQuery();
+			
+			try {
+				while( result.next() ){
+					retorno = result.getInt("COUNT(*)");
+				}
+				
+			} catch (Exception e) {
+				JOptionPane.showMessageDialog(null, "Erro ao obter quantidade de administradores no sistema!!\n"+e.getMessage());
+				
+			}
+			
+		} catch (SQLException sqle) {
+			JOptionPane.showMessageDialog(null, "Erro ao obter quantidade de administradores no sistema!!\n"+sqle.getMessage());
+		} finally {
+			AdmBancoSql.closeConnection(conn, ps, result);
+		}
+		
+		return retorno;
+		
+	}
+
+}

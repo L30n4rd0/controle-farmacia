@@ -1,0 +1,38 @@
+package model.erros;
+
+import java.sql.Date;
+
+public class ErroVO {
+	private int id, codigoErro;
+	private Date data;
+	private String informacoes, status;
+	
+	public ErroVO(int id, int codigoErro, Date data, String informacoes) {
+		this.id = id;
+		this.codigoErro = codigoErro;
+		this.data = data;
+		this.informacoes = informacoes;
+		this.status="Aguardando solu"+(char)231+""+(char)227+"o";
+	}
+
+	protected int getId() {
+		return this.id;
+	}
+
+	protected int getCodigoError() {
+		return this.codigoErro;
+	}
+
+	protected Date getData() {
+		return this.data;
+	}
+
+	protected String getInformacoes() {
+		return this.informacoes;
+	}
+
+	protected String getStatus() {
+		return status;
+	}
+
+}

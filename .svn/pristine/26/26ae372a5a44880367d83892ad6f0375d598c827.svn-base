@@ -1,0 +1,69 @@
+package cadastro;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
+import javax.swing.JButton;
+
+import ControleNegocios.ControleSubgrupo;
+import ControleNegocios.interfaces.InterfaceControleSubgrupo;
+
+public class TelaCadastroSubgrupo extends TelaCadastro{
+	private JTextField textFieldNome;
+	private String nomeCadastrado;
+	
+	public TelaCadastroSubgrupo(final String editarSubgrupo) {
+		setTitle("Cadastro de Subgrupo");
+		panel.setBounds(20, 20, 310, 260);
+		
+		JLabel lblNome = new JLabel("Nome");
+		lblNome.setBounds(6, 50, 70, 25);
+		panel.add(lblNome);
+		
+		textFieldNome = new JTextField();
+		textFieldNome.setBounds(60, 48, 244, 25);
+		panel.add(textFieldNome);
+		textFieldNome.setColumns(10);
+		
+		if (editarSubgrupo!=null) {
+			textFieldNome.setText(editarSubgrupo);
+			nomeCadastrado=editarSubgrupo;
+			
+		}
+		
+		JButton btnSalvar = new JButton("Salvar");
+		btnSalvar.setBounds(100, 175, 117, 39);
+		btnSalvar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				InterfaceControleSubgrupo controleSubgrupo=new ControleSubgrupo();
+				String resultado;
+				
+				if (editarSubgrupo!=null) {
+					resultado=controleSubgrupo.alterar(nomeCadastrado+"-"+textFieldNome.getText());
+					
+				}else {
+					resultado=controleSubgrupo.salvar(textFieldNome.getText());
+				}
+				
+				if (resultado.substring(0, 4).equals("Erro")) {
+					JOptionPane.showMessageDialog(null, resultado, "Aten"+(char)231+""+(char)227+"o", JOptionPane.ERROR_MESSAGE);
+				}else {
+					JOptionPane.showMessageDialog(null, resultado, "Informa"+(char)231+""+(char)227+"o", JOptionPane.INFORMATION_MESSAGE);
+					dispose();
+				}
+			}
+		});
+		panel.add(btnSalvar);
+		
+		setSize(350, 300);
+		setLocationRelativeTo(null);
+		setVisible(true);
+	}
+	
+	public static void main(String[] args) {
+		new TelaCadastroSubgrupo(null);
+	}
+}

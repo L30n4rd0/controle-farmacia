@@ -1,0 +1,27 @@
+package model.fornecedor;
+
+import java.util.ArrayList;
+
+public class FornecedorDAOOracle extends FornecedorDAO{
+
+	@Override
+	public String inserir(FornecedorVO fornecedor) {
+		return null;
+	}
+
+	@Override
+	public String excluir(int id, String nome) {
+		return null;
+	}
+
+	@Override
+	public String alterar(FornecedorVO fornecedor) {
+		return null;
+	}
+
+	@Override
+	public ArrayList<FornecedorVO> listar(String coluna, String organizarPor, String texto) {
+		return null;
+	}
+
+}

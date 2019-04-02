@@ -1,0 +1,37 @@
+package model.fabricaDAOS;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+import model.erros.Excecao;
+
+public class AdmBancoSql {
+	
+	public static Connection getConnection() throws Exception{
+		Connection con=null;
+		
+		try {
+			Class.forName("com.mysql.jdbc.Driver").newInstance();
+			con = DriverManager.getConnection("jdbc:mysql://127.0.0.1/bdfarmacia","root", "root");
+			
+		} catch (SQLException excecao) {
+			con = null;
+			throw new Excecao("N"+(char)227+"o foi possivel conectar com o banco", excecao);
+		}
+		return con;
+	}
+	
+	public static void closeConnection(Connection conn, Statement stmt, ResultSet rs) throws Exception{
+		try {
+			if (rs != null) rs.close( );
+			if (stmt != null)stmt.close( );
+			if (conn != null)conn.close( );
+		} catch (SQLException excecao) {
+			throw new Excecao("Erro ao fechar Banco de dados", excecao);
+			
+		}
+	}
+}

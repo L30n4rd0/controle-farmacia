@@ -1,0 +1,15 @@
+package model;
+
+import model.fabricaDAOS.FabricaDAOS;
+import model.fornecedor.FornecedorDAO;
+import model.fornecedor.FornecedorVO;
+
+public class Aplicacao {
+	public static void main(String[] args) {
+		FabricaDAOS fabrica=FabricaDAOS.getFabricaDAOS();
+		
+		FornecedorDAO admFornecedor=fabrica.criarFornecedorDAO();
+		admFornecedor.inserir(new FornecedorVO(0, "Leonardo", "serra talhada", "pe", "dfsdfdsf345435", "3432435345", null));
+	}
+
+}

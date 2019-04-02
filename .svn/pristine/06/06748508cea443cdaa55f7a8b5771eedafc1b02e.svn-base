@@ -1,0 +1,13 @@
+package ControleNegocios.interfaces;
+
+import javax.swing.JTable;
+
+public interface InterfaceControlePosto {
+	public String verificarDados(String nome, String cidade, String bairro, String cep, String fone);
+	public String salvar(String nome, String cidade, String bairro, String uf, String cep, String fone);
+	public String excluir(int id, String nome);
+	public String alterar(int id, String nome, String cidade, String bairro, String uf, String cep, String fone, String dataCadastro);
+	public JTable obterTabela(String pesquisarPor, String organizarPor, String textoPesquisa);
+	public String[] listar(String nomePesquisa);
+
+}

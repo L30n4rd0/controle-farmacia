@@ -1,0 +1,122 @@
+package basicas;
+
+import java.sql.Date;
+
+public class ItemEntrada {
+	
+	private int idItem;
+	private int idEntrada;
+	private String descricao;
+	private String unidade;
+	private String lote;
+	private Date validade;
+	private int quantPedida;
+	private int quantEntregue;
+	private double precoUnitario;
+	private double total;
+	
+	
+	public ItemEntrada() {
+		// TODO Auto-generated constructor stub
+	}
+	
+	public ItemEntrada(int idItem, Entrada idEntrada, Material descricao, Material unidade, String lote, Date validade, int quantPedida, int quantEntregue,
+			Material precoUnitario, double total) {
+		
+		this.idItem = idItem;
+		this.idEntrada = idEntrada.getIdEntrada();
+		this.descricao = descricao.getDescricao();
+		this.unidade = unidade.getApresentacao();
+		this.lote = lote;
+		this.validade = validade;
+		this.quantPedida = quantPedida;
+		this.quantEntregue = quantEntregue;
+		this.precoUnitario = precoUnitario.getPrecoUnitario();
+		this.total = total;
+	}
+	
+	
+
+	public int getIdEntrada() {
+		return idEntrada;
+	}
+
+	public void setIdEntrada(int idEntrada) {
+		this.idEntrada = idEntrada;
+	}
+
+	public int getIdItem() {
+		return idItem;
+	}
+
+	public void setIdItem(int idItem) {
+		this.idItem = idItem;
+	}
+
+	public String getDescricao() {
+		return descricao;
+	}
+
+	public void setDescricao(String descricao) {
+		this.descricao = descricao;
+	}
+
+	public String getUnidade() {
+		return unidade;
+	}
+
+	public void setUnidade(String unidade) {
+		this.unidade = unidade;
+	}
+
+	public String getLote() {
+		return lote;
+	}
+
+	public void setLote(String lote) {
+		this.lote = lote;
+	}
+
+	public Date getValidade() {
+		return validade;
+	}
+
+	public void setValidade(Date validade) {
+		this.validade = validade;
+	}
+
+	public int getQuantPedida() {
+		return quantPedida;
+	}
+
+	public void setQuantPedida(int quantPedida) {
+		this.quantPedida = quantPedida;
+	}
+
+	public int getQuantEntregue() {
+		return quantEntregue;
+	}
+
+	public void setQuantEntregue(int quantEntregue) {
+		this.quantEntregue = quantEntregue;
+	}
+
+	public double getPrecoUnitario() {
+		return precoUnitario;
+	}
+
+	public void setPrecoUnitario(double precoUnitario) {
+		this.precoUnitario = precoUnitario;
+	}
+
+	public double getTotal() {
+		return total;
+	}
+
+	public void setTotal(double total) {
+		this.total = total;
+	}
+	
+	
+
+}

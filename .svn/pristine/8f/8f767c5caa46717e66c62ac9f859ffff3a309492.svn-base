@@ -1,0 +1,635 @@
+package ControleNegocios;
+
+import java.awt.event.*;  
+import java.text.ParsePosition;  
+import java.text.SimpleDateFormat;  
+import java.util.*;  
+import javax.swing.*;  
+  
+  
+/** 
+* JTextField personalizado permitindo somente datas. 
+*/  
+public class JDateTextField extends JTextField   
+{  
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+
+	/** 
+    * Seta o padrão de data utilizada no campo. 
+    * 
+    * @param i      Um inteiro contendo o padrão de data. 
+    */  
+    public void setDefaultType(int i)   
+    {  
+        if (i == BLANKS)   
+        {  
+            nDefaultType = BLANKS;  
+            super.setText("  /  /    ");  
+        }   
+        else  
+            if (i == UNDERSCORES)   
+            {  
+                nDefaultType = UNDERSCORES;  
+                super.setText("  /  /    ");  
+            }   
+            else  
+                if (i == YEAR)   
+                {  
+                    nDefaultType = YEAR;  
+                    super.setText("0000");  
+                }   
+    }  
+  
+  
+    /** 
+    * Retorna o padrão de data utilizada no campo. 
+    * 
+    * @return   Um inteiro contendo o padrão de data. 
+    */  
+    public int getDefaultType()   
+    {  
+        return nDefaultType;  
+    }  
+  
+  
+    /** 
+    * Seta a data passada no campo. 
+    * 
+    * @param date   Uma data que será mostrada no campo. 
+    */  
+    public void setDate(Date date)   
+    {  
+        Calendar calendar = Calendar.getInstance();  
+        calendar.setTime(date);  
+        super.setText(createDateString(calendar.get(Calendar.DAY_OF_MONTH), calendar.get(Calendar.MONTH)+1, calendar.get(Calendar.YEAR)));  
+    }  
+  
+  
+    /** 
+    * Seta a data passada no campo. 
+    * 
+    * @param date   Uma data que será mostrada no campo. 
+    */  
+    public void setText(Date date)   
+    {  
+        setDate(date);  
+    }  
+  
+  
+    /** 
+    * Seta a data passada (como String) no campo. 
+    * 
+    * @param s      Uma String contendo a data que será mostrada no campo. 
+    */  
+    public void setText(String s)   
+    {  
+        Date date = null;  
+        if (s != null)   
+        {  
+            ParsePosition parseposition = new ParsePosition(0);  
+            if (nDefaultType == YEAR)   
+            {  
+                SimpleDateFormat simpledateformat = new SimpleDateFormat("yyyy");  
+                date = simpledateformat.parse(s, parseposition);  
+            }   
+            else   
+            {  
+                SimpleDateFormat simpledateformat1 = new SimpleDateFormat("dd/MM/yyyy");  
+                date = simpledateformat1.parse(s, parseposition);  
+            }  
+        }  
+        if (date == null)   
+        {  
+            Calendar calendar = Calendar.getInstance();  
+            date = calendar.getTime();  
+        }  
+        setDate(date);  
+    }  
+  
+  
+    /** 
+    * Retorna a data do campo como uma String. 
+    * 
+    * @return   Uma String contendo a data do campo. 
+    */  
+    public String getDateText()   
+    {  
+        Date dDate = getDate();  
+        if (dDate == null)  
+            return "";  
+  
+  
+        Calendar calendar = Calendar.getInstance();  
+        calendar.setTime(getDate());  
+        return createDateString(calendar.get(Calendar.DAY_OF_MONTH), calendar.get(Calendar.MONTH)+1, calendar.get(Calendar.YEAR));  
+    }  
+  
+  
+    /** 
+    * Retorna a data do campo como uma String. 
+    * 
+    * @return   Uma String contendo a data do campo. 
+    */  
+    public String toString()   
+    {  
+        return getText();  
+    }  
+  
+  
+    /** 
+    * Verifica se o campo está vazio. 
+    * 
+    * @return   Um boolean true se verdadeiro ou false, caso contrário. 
+    */  
+    public boolean isEmptyDate()   
+    {  
+        String sCurrentText = super.getText();  
+  
+  
+        if (sCurrentText.compareTo("  /  /    ") == 0)  
+            return true;  
+        if (sCurrentText.compareTo("  /  /    ") == 0)  
+            return true;  
+  
+  
+        return false;  
+    }  
+  
+  
+    /** 
+    * Retorna a data do campo. 
+    * 
+    * @return   Um Date contendo a data do campo. 
+    */  
+    public Date getDate() throws NumberFormatException   
+    {  
+        Calendar calendar = Calendar.getInstance();  
+        String sTmp = "";  
+        int nYear = 2002;  
+        int nMonth = 1;  
+        int nDay = 1;  
+        int ai[] = { 1, 3, 5, 7, 8, 10, 12 };  
+  
+  
+        String sCurrentText = super.getText();  
+  
+  
+        Vector vector = new Vector(7);  
+        for(int l = 0; l < ai.length; l++)  
+            vector.addElement(new Integer(ai[l]));  
+  
+  
+        calendar.set(nYear, nMonth, nDay, 0, 0, 0);  
+        try   
+        {  
+           sTmp = replaceString(sCurrentText.substring(0, 2).trim(), "_", "");  
+           nDay = Integer.parseInt(sTmp);  
+           sTmp = replaceString(sCurrentText.substring(3, 5).trim(), "_", "");  
+           nMonth = Integer.parseInt(sTmp);  
+           sTmp = replaceString(sCurrentText.substring(6).trim(), "_", "");  
+  
+  
+           // Suporta 1 , 01, 001, 2001  
+           if (sTmp.length() == 1)  
+               sTmp = "200" + sTmp;  
+           if (sTmp.length() == 2)  
+               sTmp = "20" + sTmp;  
+           if (sTmp.length() == 3)  
+                sTmp = "2" + sTmp;  
+           nYear = Integer.parseInt(sTmp);  
+  
+  
+        } catch(IndexOutOfBoundsException indexoutofboundsexception)   
+          {  
+             setCaretPosition(0);  
+             NumberFormatException numberformatexception2 = new NumberFormatException(new String("A Data " + sCurrentText + " é inválida - DD/MM/YYYY"));  
+             throw numberformatexception2;  
+          } catch(NumberFormatException numberformatexception)   
+            {  
+                setCaretPosition(0);  
+            }  
+       calendar.set(nYear, nMonth - 1, nDay, 0, 0, 0);  
+       return calendar.getTime();  
+    }  
+  
+  
+    /** 
+    * Retorna a data e hora do campo. 
+    * 
+    * @return   Um Calendar contendo a data e hora do campo. 
+    */  
+    public Calendar getDateTime() throws NumberFormatException   
+    {  
+        Calendar calendar = Calendar.getInstance();  
+        String sTmp = "";  
+        int nYear = 2002;  
+        int nMonth = 1;  
+        int nDay = 1;  
+        int ai[] = { 1, 3, 5, 7, 8, 10, 12 };  
+  
+  
+        String sCurrentText = super.getText();  
+  
+  
+        Vector vector = new Vector(7);  
+        for(int l = 0; l < ai.length; l++)  
+            vector.addElement(new Integer(ai[l]));  
+  
+  
+        calendar.set(nYear, nMonth, nDay);  
+        try   
+        {  
+           sTmp = replaceString(sCurrentText.substring(0, 2).trim(), "_", "");  
+           nDay = Integer.parseInt(sTmp);  
+           sTmp = replaceString(sCurrentText.substring(3, 5).trim(), "_", "");  
+           nMonth = Integer.parseInt(sTmp);  
+           sTmp = replaceString(sCurrentText.substring(6).trim(), "_", "");  
+  
+  
+           // Suporta 1 , 01, 001, 2001  
+           if (sTmp.length() == 1)  
+               sTmp = "200" + sTmp;  
+           if (sTmp.length() == 2)  
+               sTmp = "20" + sTmp;  
+           if (sTmp.length() == 3)  
+                sTmp = "2" + sTmp;  
+           nYear = Integer.parseInt(sTmp);  
+  
+  
+        } catch(IndexOutOfBoundsException indexoutofboundsexception)   
+          {  
+             setCaretPosition(0);  
+             NumberFormatException numberformatexception2 = new NumberFormatException(new String("A Data " + sCurrentText + " é inválida - DD/MM/YYYY"));  
+             throw numberformatexception2;  
+          } catch(NumberFormatException numberformatexception)   
+            {  
+                setCaretPosition(0);  
+            }  
+       calendar.set(nYear, nMonth - 1, nDay);  
+       return calendar;  
+    }  
+  
+  
+    /** 
+    * Processa os eventos de teclados ocorridos no campo. 
+    * 
+    * @param keyevent   Um KeyEvent contendo o evento ocorrido no campo. 
+    */  
+    public void processKeyEvent(KeyEvent keyevent)   
+    {  
+        String s = "";  
+        String s2 = "";  
+        char c = keyevent.getKeyChar();  
+        boolean flag = false;  
+        boolean flag1 = false;  
+        boolean flag2 = false;  
+        boolean flag3 = false;  
+        boolean flag4 = false;  
+        byte byte0 = 1;  
+        boolean flag5 = false;  
+        boolean flag6 = false;  
+        boolean flag7 = false;  
+        boolean flag8 = false;  
+        boolean flag9 = false;  
+        flag5 = c == '';  
+        flag6 = c == '\177';  
+        flag7 = c == '\26';  
+        flag8 = c == '\30';  
+        flag9 = keyevent.paramString().startsWith("KEY_PRESSED");  
+        if (keyevent.getKeyCode() == 0 || flag5 || flag6 || flag7 || flag8)  
+            if (isValidCharacter(c))   
+            {  
+                if (isPrintableCharacter(c) || flag5 || flag6)   
+                {  
+                    if (!flag5 && !flag6 || flag9)   
+                    {  
+                        String s1 = super.getText();  
+                        int i = s1.length();  
+                        char ac[] = new char[i];  
+                        int j = getCaretPosition();  
+                        int k = getSelectionStart();  
+                        int l = getSelectionEnd();  
+                        if (k != l) {  
+                        int i1 = k;  
+                        setSelectionEnd(i1);  
+                        j = k;  
+                        setCaretPosition(j);  
+                    }  
+                    if (j <= i && ((j != 0 || !flag5) && (j != i || flag5)))   
+                    {  
+                        int j1 = j;  
+                        if (flag5)   
+                        {  
+                            byte0 = -1;  
+                            j1 += byte0;  
+                        }  
+                        char c1;  
+                        if (nDefaultType != 3)  
+                            c1 = !flag6 && !flag5 ? c : nDefaultType != 2 ? ' ' : '_';  
+                        else  
+                            c1 = !flag6 && !flag5 ? c : '0';  
+                        if (s1.charAt(j1) == '/')  
+                            j1 += byte0;  
+                        for (int k1 = 0; k1 < i; k1++) {  
+                            if (k1 == j1)  
+                                ac[k1] = c1;  
+                            else  
+                                ac[k1] = s1.charAt(k1);  
+                    }  
+  
+  
+                    String s3 = new String(ac);  
+                    if (isValidString(s3))   
+                    {  
+                        super.setText(s3);  
+                        if (flag5)  
+                            setCaretPosition(j1);  
+                        else  
+                            setCaretPosition(j1 + 1);  
+                    }  
+                }  
+            }  
+            keyevent.consume();  
+        }   
+        else  
+        if (flag8 || flag7)  
+            keyevent.consume();  
+        }   
+        else   
+            keyevent.consume();  
+        super.processKeyEvent(keyevent);  
+    }  
+  
+  
+    /** 
+    * Verifica se o dia, mês e ano são válidos ou não. 
+    * 
+    * @param nDay       Um inteiro contendo o dia. 
+    * @param nMonth     Um inteiro contendo o mês. 
+    * @param nYear      Um inteiro contendo o ano. 
+    * 
+    * @return   Um boolean true se verdadeiro ou false, caso contrário. 
+    */  
+    public boolean isValidDate(String date)   
+    {  
+    	
+    	int day = new Integer(date.substring(0, 2));
+		int month = new Integer(date.substring(3, 5));
+		int year = new Integer(date.substring(6, 10));
+		
+		
+    	if(day >=1 && day <=31){
+ 
+    		if((month == 2)&&((day > 28))){
+    			if(day > 29) return false;
+    			if(day == 29){
+    				if ( ( (year % 4) == 0 && (year % 100) != 0 ) || ( (year % 400) == 0 ) ){  
+    		            return true;  
+    		        }  
+    		        else{  
+    		            return false;  
+    		        }
+    			}
+    			
+    		}
+    		if((month == 4)&&((day == 31))) return false;
+    		if((month == 6)&&((day == 31))) return false;
+    		if((month == 9)&&((day == 31))) return false;
+    		if((month == 11)&&((day == 31))) return false;
+    		
+ 
+    	} else return false;
+    	if(month <1 || month >12){
+    		return false;
+    	}
+    	
+    	if(year < 2003 || year > 2023){
+    		return false;
+    	}
+    	
+    	return true;
+    }  
+  
+  
+    /** 
+    * Verifica se o mês e ano são válidos ou não. 
+    * 
+    * @param nMonth     Um inteiro contendo o mês. 
+    * @param nYear      Um inteiro contendo o ano. 
+    * 
+    * @return   Um boolean true se verdadeiro ou false, caso contrário. 
+    */  
+    public boolean isValidMonthYear(int nMonth, int nYear)  
+    {  
+        if (nMonth <1 || nMonth > 12)  
+            return false;  
+        return nYear >0 && nYear <=9999;  
+    }  
+          
+    /** 
+    * Verifica se o caracter é válido ou não. 
+    * 
+    * @param c      Um Char contendo o caractere a ser validado. 
+    * 
+    * @return   Um boolean true se verdadeiro ou false, caso contrário. 
+    */  
+    private boolean isValidCharacter(char c)   
+    {  
+        return (c < '!' || c > '/') && (c < ':' || c > '~');  
+    }  
+  
+  
+    /** 
+    * Verifica se o caracter pode ser impresso na tela ou não. 
+    * 
+    * @param c      Um Char contendo o caractere a ser mostrado. 
+    * 
+    * @return   Um boolean true se verdadeiro ou false, caso contrário. 
+    */  
+    private boolean isPrintableCharacter(char c)   
+    {  
+        return c >= ' ' && c <= '~';  
+    }  
+  
+  
+    /** 
+    * Verifica se a String é válida ou não. 
+    * 
+    * @param S      Uma String contendo a String a sere validada. 
+    * 
+    * @return   Um boolean true se verdadeiro ou false, caso contrário. 
+    */  
+    private boolean isValidString(String s)   
+    {  
+        return true;  
+    }  
+  
+  
+    /** 
+    * Retorna a data do campo. 
+    * 
+    * @param nDay       Um inteiro contendo o dia. 
+    * @param nMonth     Um inteiro contendo o mês. 
+    * @param nYear      Um inteiro contendo o ano. 
+    * 
+    * @return   Uma String contendo a data. 
+    */  
+    private String createDateString(int nDay, int nMonth, int nYear)   
+    {  
+        String s = "";  
+        if (nDefaultType != 3)   
+        {  
+            if (nDay < 10)  
+                s = "0";  
+            s += String.valueOf(nDay);  
+            s += "/";  
+            if (nMonth < 10)  
+                s += "0";  
+            s += String.valueOf(nMonth);  
+            s += "/";  
+        }  
+        if (nYear < 1000)   
+        {  
+            s += "0";  
+            if (nYear < 100)   
+            {  
+                s += "0";  
+                if (nYear < 10)  
+                    s += "0";  
+            }  
+        }  
+        s += String.valueOf(nYear);  
+        return s;  
+    }  
+  
+  
+    /** 
+    * Substitui uma determinada String dentro de outra. 
+    * 
+    * @param sSearched      Uma String contendo a String que será pesquisada. 
+    * @param sFind          Uma String contendo o que deve ser procurado na String. 
+    * @param sReplace       Uma String contendo o que deve ser substituído na String. 
+    * 
+    * @return   Uma String contendo a data. 
+    */  
+    private static String replaceString(String sSearched, String sFind, String sReplace)   
+    {  
+        String sReplaced = sSearched;  
+  
+  
+        if ((sReplaced != null) && (sReplaced.length() > 0))   
+        {  
+            int nPos = 0;  
+            int nFrom = 0;  
+  
+  
+            while (true)   
+            {  
+                nPos = sReplaced.indexOf(sFind, nFrom);  
+                if (nPos != -1)   
+                {  
+                    sReplaced = sReplaced.substring(0, nPos) + sReplace + sReplaced.substring(nPos + sFind.length());  
+                    nFrom = nPos + sReplace.length();  
+                }  
+                else  
+                    break;  
+            }  
+        }  
+        return sReplaced;  
+    }  
+  
+  
+    /** 
+    * Limpa o JDateTextField. 
+    */  
+    public void limpaData()  
+    {  
+        setDefaultType(1);  
+    }  
+  
+  
+    /** 
+    * Constrói um novo JDateTextField com o padrão de data DD/MM/AAAA. 
+    */  
+    public JDateTextField()   
+    {  
+        setDefaultType(1);  
+    }  
+  
+  
+    /** 
+    * Constrói um novo JDateTextField com uma data especificada. 
+    * 
+    * @param nDay       Um inteiro contendo o dia a ser mostrado. 
+    * @param nMonth     Um inteiro contendo o mês a ser mostrado. 
+    * @param nYear      Um inteiro contendo o ano a ser mostrado. 
+    */  
+    public JDateTextField(int nDay, int nMonth, int nYear)   
+    {  
+        this(nDay, nMonth, nYear, 0);  
+    }  
+  
+  
+    /** 
+    * Constrói um novo JDateTextField com o padrão especificado no parâmetro. 
+    * 
+    * @param i  Um inteiro contendo o padrão de data a ser utilizado. 
+    */  
+    public JDateTextField(int i)   
+    {  
+        this(1, 1, 2002, i);  
+        Calendar calendar = Calendar.getInstance();  
+        super.setText(createDateString(calendar.get(Calendar.DAY_OF_MONTH), calendar.get(Calendar.MONTH)+1, calendar.get(Calendar.YEAR)));  
+    }  
+  
+  
+    /** 
+    * Constrói um novo JDateTextField com uma data especificada. 
+    * 
+    * @param nDay       Um inteiro contendo o dia a ser mostrado. 
+    * @param nMonth     Um inteiro contendo o mês a ser mostrado. 
+    * @param nYear      Um inteiro contendo o ano a ser mostrado. 
+    * @param 1          Padrão de data a ser utilizado (DD/MM/AAAA). 
+    */  
+    public JDateTextField(int nDay, int nMonth, int nYear, int l)   
+    {  
+        super("", l);  
+        nDefaultType = CURRENT_DATE;  
+        warningMessageActive = false;  
+        super.setText(createDateString(nDay, nMonth, nYear));  
+    }  
+  
+  
+    public static final int CURRENT_DATE = 0;  
+  
+  
+    public static final int BLANKS = 1;  
+  
+  
+    public static final int UNDERSCORES = 2;  
+  
+  
+    public static final int YEAR = 3;  
+  
+  
+    private static final int BACKSPACE = 8;  
+  
+  
+    private static final int DELETE = 127;  
+  
+  
+    private static final int PASTE = 22;  
+  
+  
+    private static final int CUT = 24;  
+  
+  
+    private int nDefaultType;  
+  
+  
+    private boolean warningMessageActive;  
+} 

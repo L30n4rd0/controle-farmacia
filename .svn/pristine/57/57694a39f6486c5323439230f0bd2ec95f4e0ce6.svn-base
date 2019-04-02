@@ -1,0 +1,164 @@
+package admBanco.DAOs;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+
+import javax.swing.JOptionPane;
+
+import basicas.Usuario;
+
+import admBanco.AdmBancoSql;
+import admBanco.InterfaceBanco;
+
+public class SubgrupoDAO implements InterfaceBanco{
+
+	public String inserir(Object objct) {
+		String subgrupo = (String) objct;
+		
+		String retorno = "";
+		PreparedStatement ps = null;
+		Connection conn = null;
+		
+		try{
+			String stringSQL="INSERT INTO Subgrupo (nome) VALUES (?)";
+			
+			conn = AdmBancoSql.getConnection();
+			ps = conn.prepareStatement(stringSQL);
+			
+			ps.setString(1, subgrupo);
+
+			ps.executeUpdate();
+			
+			retorno = "Dados registrados com sucesso.";
+		} catch (SQLException sqle) {
+			retorno = "Erro ao registrar os dados\n"+sqle.getMessage();
+		} finally {
+			AdmBancoSql.closeConnection(conn, ps, null);
+		}
+		
+		if (retorno.contains("Duplicate")) {
+			
+			retorno="Erro j"+(char)225+" existe um Subgrupo cadastrado com este nome.";
+			
+		}
+		
+		return retorno;
+	}
+
+	public String excluir(int id, String nome) {
+		PreparedStatement ps = null;
+		Connection conn = null;
+		String retorno="";
+		
+		try {
+			conn = AdmBancoSql.getConnection();
+			ps = conn.prepareStatement("DELETE FROM Subgrupo WHERE nome=?");
+			ps.setString(1, nome);
+			
+			int statusExclusao=ps.executeUpdate();
+			
+			if (statusExclusao==0)
+//				JOptionPane.showMessageDialog(null, "N"+(char)227+"o foi poss"+(char)237+"vel encontrar o usu"+(char)225+"rio "+nome);
+				retorno="N"+(char)227+"o foi poss"+(char)237+"vel encontrar o subgrupo "+nome;
+			
+			else if (statusExclusao==1)
+//				JOptionPane.showMessageDialog(null, "Usu"+(char)225+"rio excluido com sucesso. Exclus"+(char)227+"o do Usu"+(char)225+"rio: "+nome);
+				retorno="Subgrupo excluido com sucesso. Exclus"+(char)227+"o do subgrupo: "+nome;
+			
+		} catch (SQLException sqle) {
+//			JOptionPane.showMessageDialog(null, "Ocorreu um erro durante a exclus"+(char)227+"o do usu"+(char)225+"rio: "+nome+"\n"+sqle.getMessage());
+			retorno="Ocorreu um erro durante a exclus"+(char)227+"o do subgrupo: "+nome+"\n"+sqle.getMessage();
+		} finally {
+			AdmBancoSql.closeConnection(conn, ps, null);
+		}
+		
+		return retorno;
+		
+	}
+
+	public String alterar(Object objct) {
+		String subgrupo=(String)objct;
+		int divisao=0;
+		for (int i = 0; i < subgrupo.length(); i++) {
+			if (subgrupo.charAt(i)=='-') {
+				divisao=i;
+				break;
+			}
+			
+		}
+			
+		String retorno = "";
+		PreparedStatement ps = null;
+		Connection conn = null;
+		try {
+			String SQL = "UPDATE Subgrupo SET nome=? WHERE nome=?";
+			
+			conn = AdmBancoSql.getConnection();
+			ps = conn.prepareStatement(SQL);
+			
+			ps.setString(1, subgrupo.substring(divisao+1, subgrupo.length()));
+			ps.setString(2, subgrupo.substring(0, divisao));
+			
+			int statusExclusao=ps.executeUpdate();
+			
+			if (statusExclusao==0){
+//				JOptionPane.showMessageDialog(null, "N"+(char)227+"o foi poss"+(char)237+"vel encontrar o usu"+(char)225+"rio "+usuario.getNome());
+				retorno = "N"+(char)227+"o foi poss"+(char)237+"vel encontrar o subgrupo "+subgrupo.substring(0, divisao);
+				
+			}
+			
+			else if (statusExclusao==1){
+//				JOptionPane.showMessageDialog(null, "Dados atualizados com sucesso do usu"+(char)225+"rio: "+usuario.getNome());
+				retorno = "Dados atualizados com sucesso do subgrupo: "+subgrupo.substring(0, divisao);
+			}
+			
+		} catch (SQLException sqle) {
+//			JOptionPane.showMessageDialog(null, "Erro ao alterar os dados do usu"+(char)225+"rio: "+usuario.getNome());
+			retorno = "Erro ao alterar os dados do subgrupo: "+subgrupo.substring(0, divisao)+"\n"+sqle.getMessage();
+		} finally {
+			AdmBancoSql.closeConnection(conn, ps, null);
+		}
+		return retorno;
+	}
+
+	public ArrayList<Object> listar(String pesquisarColuna, String organizarPor, String textoPesquisa) {
+		PreparedStatement ps = null;
+		Connection conn = null;
+		ResultSet result = null;
+		
+		ArrayList<Object> list = new ArrayList<Object>();
+		try {
+			conn = AdmBancoSql.getConnection();
+			ps = conn.prepareStatement("SELECT * FROM Subgrupo WHERE "+pesquisarColuna+" LIKE '%"+textoPesquisa+"%' ORDER BY "+organizarPor);
+			result = ps.executeQuery();
+			while( result.next() )
+			{
+				String nome = result.getString("nome");
+				
+				list.add(nome);
+			}
+		} catch (SQLException sqle) {
+			JOptionPane.showMessageDialog(null, "Ocorreu um erro durante a consulta!!\n"+sqle.getMessage());
+		} finally {
+			AdmBancoSql.closeConnection(conn, ps, result);
+		}
+		return list;
+		
+	}
+
+	@Override
+	public Object buscar(int id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Object buscar(String nome) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+}

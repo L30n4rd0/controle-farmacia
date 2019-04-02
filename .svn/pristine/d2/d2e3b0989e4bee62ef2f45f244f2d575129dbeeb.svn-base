@@ -1,0 +1,21 @@
+package model.fornecedor;
+
+import model.fabricaDAOS.FabricaDAOS;
+
+public class FornecedorBO {
+	
+	public void inserir(FornecedorVO fornecedor) throws Exception  {
+		FabricaDAOS fabricaDAO=FabricaDAOS.getFabricaDAOS();
+		FornecedorDAO fornecedorDAo=fabricaDAO.criarFornecedorDAO();
+		fornecedorDAo.inserir(fornecedor);
+		
+	}
+	
+	public void alterar(FornecedorVO fornecedor) throws Exception  {
+		FabricaDAOS fabricaDAO=FabricaDAOS.getFabricaDAOS();
+		FornecedorDAO fornecedorDAo=fabricaDAO.criarFornecedorDAO();
+		fornecedorDAo.alterar(fornecedor);
+		
+	}
+
+}

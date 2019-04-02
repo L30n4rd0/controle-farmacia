@@ -1,0 +1,7 @@
+package model.subgrupo;
+
+import model.saida.SaidaDAO;
+
+public class SaidaDAOOracle extends SaidaDAO{
+
+}

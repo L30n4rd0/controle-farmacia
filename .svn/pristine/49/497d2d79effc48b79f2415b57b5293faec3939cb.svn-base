@@ -1,0 +1,164 @@
+package consultas;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.util.ArrayList;
+
+import javax.swing.JOptionPane;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
+
+import cadastro.TelaCadastroFornecedor;
+import cadastro.TelaCadastroPosto;
+
+import ControleNegocios.ControlePostoDeSaude;
+import ControleNegocios.interfaces.InterfaceControlePosto;
+import admBanco.InterfaceBanco;
+import admBanco.DAOs.FornecedorDAO;
+import basicas.Fornecedor;
+import basicas.PostoDeSaude;
+import basicas.Usuario;
+
+public class TelaConsultaPosto extends TelaConsulta{
+	private static final long serialVersionUID = 1L;
+	private InterfaceControlePosto controlePosto;
+	
+	public TelaConsultaPosto(Usuario userLogado) {
+		super(userLogado);
+		setTitle("Posto de Sa"+(char)250+"de");
+		
+		controlePosto=new ControlePostoDeSaude();
+		
+		getComboBoxPesquisa().addItem("Nome");
+		getComboBoxPesquisa().addItem("ID");
+		getComboBoxPesquisa().addItem("Cidade");
+		getComboBoxPesquisa().addItem("Bairro");
+		getComboBoxPesquisa().addItem("UF");
+		getComboBoxPesquisa().addItem("CEP");
+		getComboBoxPesquisa().addItem("Fone");
+		getComboBoxPesquisa().addItem("Data de Cadastro");
+		
+		getComboBoxOrganiza().addItem("ID");
+		getComboBoxOrganiza().addItem("Nome");
+		getComboBoxOrganiza().addItem("Cidade");
+		getComboBoxOrganiza().addItem("Bairro");
+		getComboBoxOrganiza().addItem("UF");
+		getComboBoxOrganiza().addItem("CEP");
+		getComboBoxOrganiza().addItem("Fone");
+		getComboBoxOrganiza().addItem("Data de Cadastro");
+		
+		getTextFieldPesquisa().setText("");
+		
+		atualizaTabela(getComboBoxPesquisa().getSelectedItem().toString(), getComboBoxOrganiza().getSelectedItem().toString(), getTextFieldPesquisa().getText());
+		
+		setVisible(true);
+	}
+	
+	public void actionPerformed(ActionEvent e) {
+		if (e.getSource()==getBtnDeletar()) {
+			if (getTabela().getSelectedRow()==-1) {
+				JOptionPane.showMessageDialog(null, "Por favor selecione uma linha.");
+				
+			}else {
+				
+				String resultado=controlePosto.excluir(Integer.parseInt(getTabela().getValueAt(getTabela().getSelectedRow(), 0).toString()), getTabela().getValueAt(getTabela().getSelectedRow(), 1).toString());
+				
+				if (resultado.substring(0, 4).equals("Erro")) {
+					JOptionPane.showMessageDialog(null, resultado, "Erro", JOptionPane.ERROR_MESSAGE);
+					
+				}else {
+					JOptionPane.showMessageDialog(null, resultado, "Informa"+(char)231+""+(char)227+"o", JOptionPane.INFORMATION_MESSAGE);
+				}
+				
+				atualizaTabela(getComboBoxPesquisa().getSelectedItem().toString(), getComboBoxOrganiza().getSelectedItem().toString(), getTextFieldPesquisa().getText());
+			}
+		}else if (e.getSource()==getComboBoxOrganiza()) {
+			atualizaTabela(getComboBoxPesquisa().getSelectedItem().toString(), getComboBoxOrganiza().getSelectedItem().toString(), getTextFieldPesquisa().getText());
+			
+		}else if (e.getSource()==getBtnEditar()) {
+			if (getTabela().getSelectedRow()==-1) {
+				JOptionPane.showMessageDialog(null, "Por favor selecione uma linha.");
+			}
+			else {
+				new TelaCadastroPosto(new PostoDeSaude(
+						Integer.parseInt(getTabela().getValueAt(getTabela().getSelectedRow(), 0).toString()),//id do posto selecionado
+						getTabela().getValueAt(getTabela().getSelectedRow(), 1).toString(),//nome do posto selecionado
+						getTabela().getValueAt(getTabela().getSelectedRow(), 2).toString(),//cidade do posto selecionado
+						getTabela().getValueAt(getTabela().getSelectedRow(), 3).toString(),//bairro do posto selecionado
+						getTabela().getValueAt(getTabela().getSelectedRow(), 4).toString(),//uf do posto selecionado
+						getTabela().getValueAt(getTabela().getSelectedRow(), 5).toString(),//cep do posto selecionado
+						getTabela().getValueAt(getTabela().getSelectedRow(), 6).toString(),//fone do posto selecionado
+						null));
+				
+				atualizaTabela(getComboBoxPesquisa().getSelectedItem().toString(), getComboBoxOrganiza().getSelectedItem().toString(), getTextFieldPesquisa().getText());
+				
+			}
+		}
+	}
+	
+	public void keyReleased(KeyEvent e) {
+		if (e.getSource()==getTextFieldPesquisa()) {
+			atualizaTabela(getComboBoxPesquisa().getSelectedItem().toString(), getComboBoxOrganiza().getSelectedItem().toString(), getTextFieldPesquisa().getText());
+		}
+		
+	}
+	
+	public void atualizaTabela(String pesquisarPor, String organizarPor, String textoPesquisa) {
+		
+		if (pesquisarPor.equals("Nome"))
+			pesquisarPor="nome";
+			
+		else if (pesquisarPor.equals("ID"))
+			pesquisarPor="idPSF";
+		
+		else if (pesquisarPor.equals("Cidade"))
+			pesquisarPor="cidade";
+		
+		else if (pesquisarPor.equals("UF"))
+			pesquisarPor="uf";
+		
+		else if (pesquisarPor.equals("Bairro"))
+			pesquisarPor="bairro";
+		
+		else if (pesquisarPor.equals("Fone"))
+			pesquisarPor="fone";
+		
+		else if (pesquisarPor.equals("Data de Cadastro"))
+			pesquisarPor="dataCadastro";
+//**********************************************
+		
+		if (organizarPor.equals("Nome"))
+			organizarPor="nome";
+			
+		else if (organizarPor.equals("ID"))
+			organizarPor="idPSF";
+		
+		else if (organizarPor.equals("Cidade"))
+			organizarPor="cidade";
+		
+		else if (organizarPor.equals("UF"))
+			organizarPor="uf";
+		
+		else if (organizarPor.equals("Bairro"))
+			organizarPor="bairro";
+		
+		else if (organizarPor.equals("Fone"))
+			organizarPor="fone";
+		
+		else if (organizarPor.equals("Data de Cadastro"))
+			organizarPor="dataCadastro";
+		
+		try {
+			remove(getScrollPane());
+			
+		} catch (Exception e) {}
+		
+		setTabela(controlePosto.obterTabela(pesquisarPor, organizarPor, textoPesquisa));
+		
+		getScrollPane().setViewportView(getTabela());
+		getScrollPane().repaint();
+		add(getScrollPane());
+		
+	}
+	
+}

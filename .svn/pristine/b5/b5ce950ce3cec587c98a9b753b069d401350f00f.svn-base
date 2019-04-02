@@ -1,0 +1,32 @@
+package model.usuario;
+
+import java.util.ArrayList;
+
+import model.fabricaDAOS.FabricaDAOS;
+
+public class UsuarioBO {
+	public void inserir(UsuarioVO usuario) throws Exception {
+		
+		FabricaDAOS fabricaDAOS=FabricaDAOS.getFabricaDAOS();
+		UsuarioDAO usuarioDAO=fabricaDAOS.criarUsuarioDAO();
+		
+		ArrayList<UsuarioVO> usuarios=usuarioDAO.listar("idUsuario", "idUsuario", "");
+		
+		for (UsuarioVO usuarioVO : usuarios) {
+			if (usuario.getLogin().equals(usuarioVO.getLogin()))
+				throw new Exception("Login inv"+(char)225+"lido, j"+(char)225+" existe um usu"+(char)225+"rio utilizando este login!");
+		}
+		
+		usuarioDAO.inserir(usuario);
+	}
+	
+	public void alterarUsuario(UsuarioVO usuario) throws Exception {
+		FabricaDAOS fabricaDAOS=FabricaDAOS.getFabricaDAOS();
+		
+		UsuarioDAO usuarioDAO=fabricaDAOS.criarUsuarioDAO();
+		
+		usuarioDAO.alterar(usuario);
+		
+	}
+
+}

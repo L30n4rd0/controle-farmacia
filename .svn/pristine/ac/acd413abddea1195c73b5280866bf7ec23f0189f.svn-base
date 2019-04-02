@@ -1,0 +1,234 @@
+package admBanco.DAOs;
+
+
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+
+import javax.swing.JOptionPane;
+
+import basicas.Material;
+import basicas.PostoDeSaude;
+
+import admBanco.AdmBancoSql;
+import admBanco.InterfaceBanco;
+
+public class PostoDeSaudeDAO implements InterfaceBanco{
+
+	public String inserir(Object objct) {
+		PostoDeSaude psf=(PostoDeSaude)objct;
+		
+		String retorno =null;
+		PreparedStatement ps = null;
+		Connection conn = null;
+		
+		try{
+			String stringSQL = "INSERT INTO PSF (idPSF,nome,cidade,bairro,uf,CEP,fone,dataCadastro) VALUES (?,?,?,?,?,?,?,?)";
+			
+			conn = AdmBancoSql.getConnection();
+			ps = conn.prepareStatement(stringSQL);
+			
+			ps.setInt(1, psf.getIdPSF());
+			ps.setString(2, psf.getNome());
+			ps.setString(3, psf.getCidade());
+			ps.setString(4, psf.getBairro());
+			ps.setString(5, psf.getUF());
+			ps.setString(6, psf.getCEP());
+			ps.setString(7, psf.getFone());
+			ps.setDate(8, psf.getDataCadastro());
+			ps.executeUpdate();
+			
+			retorno = "Dados cadastrados com sucesso. Cadastro do posto de sa"+(char)250+"de: "+ psf.getNome();
+		} catch (SQLException sqle) {
+			
+			retorno = "Erro ao inserir os dados.\n"+sqle.getMessage();
+		} finally {
+			AdmBancoSql.closeConnection(conn, ps, null);
+		}
+		return retorno;	
+	}
+
+	public String excluir(int id, String nome) {
+		PreparedStatement ps = null;
+		Connection conn = null;
+		String retorno =null;
+		
+		try {
+			conn = AdmBancoSql.getConnection();
+			ps = conn.prepareStatement("DELETE FROM PSF WHERE idPSF = ?");
+			ps.setInt(1, id);
+			
+			int statusExclusao=ps.executeUpdate();
+			
+			if (statusExclusao==0)
+//				JOptionPane.showMessageDialog(null, "N"+(char)227+"o foi poss"+(char)237+"vel encontrar o posto de sa"+(char)250+"de: "+nome);
+				retorno="N"+(char)227+"o foi poss"+(char)237+"vel encontrar o posto de sa"+(char)250+"de: "+nome;
+			
+			else if (statusExclusao==1)
+//				JOptionPane.showMessageDialog(null, "Posto excluido com sucesso. Exclus"+(char)227+"o do posto: "+nome);
+			retorno="Posto excluido com sucesso. Exclus"+(char)227+"o do posto: "+nome;
+			
+		} catch (SQLException sqle) {
+//			JOptionPane.showMessageDialog(null, "Ocorreu um erro durante a exclus"+(char)227+"o do posto: "+nome+"\n"+sqle.getMessage());
+			retorno="Ocorreu um erro durante a exclus"+(char)227+"o do posto: "+nome+"\n"+sqle.getMessage();
+		} finally {
+			AdmBancoSql.closeConnection(conn, ps, null);
+		}
+		
+		return retorno;	
+		
+	}
+
+	public String alterar(Object objct) {
+		PostoDeSaude psf=(PostoDeSaude)objct;
+		
+		String retorno = "";
+		PreparedStatement ps = null;
+		Connection conn = null;
+		try {
+			String SQL = "UPDATE PSF SET nome=?,cidade=?,bairro=?,uf=?,CEP=?,fone=? WHERE idPSF=?";
+			
+			conn = AdmBancoSql.getConnection();
+			ps = conn.prepareStatement(SQL);
+			
+			ps.setString(1, psf.getNome());
+			ps.setString(2, psf.getCidade());
+			ps.setString(3, psf.getBairro());
+			ps.setString(4, psf.getUF());
+			ps.setString(5, psf.getCEP());
+			ps.setString(6, psf.getFone());
+//			ps.setDate(7, psf.getDataCadastro());
+			ps.setInt(7, psf.getIdPSF());
+			
+			int statusExclusao=ps.executeUpdate();
+			
+			if (statusExclusao==0){
+//				JOptionPane.showMessageDialog(null, "N"+(char)227+"o foi poss"+(char)237+"vel encontrar o posto de sa"+(char)250+"de: "+psf.getNome());
+				retorno = "N"+(char)227+"o foi poss"+(char)237+"vel encontrar o posto de sa"+(char)250+"de: "+psf.getNome();
+				
+			}
+			
+			else if (statusExclusao==1){
+//				JOptionPane.showMessageDialog(null, "Dados atualizados com sucesso do posto de sa"+(char)250+"de: "+psf.getNome());
+				retorno = "Dados atualizados com sucesso do posto de sa"+(char)250+"de: "+psf.getNome();
+			}
+			
+		} catch (SQLException sqle) {
+//			JOptionPane.showMessageDialog(null, "Erro ao alterar os dados do posto de sa"+(char)250+"de: "+psf.getNome());
+			retorno = "Erro ao alterar os dados do posto de sa"+(char)250+"de: "+psf.getNome();
+		} finally {
+			AdmBancoSql.closeConnection(conn, ps, null);
+		}
+		return retorno;
+	}
+
+	public ArrayList<Object> listar(String coluna) {
+		PreparedStatement ps = null;
+		Connection conn = null;
+		ResultSet result = null;	
+		ArrayList<Object> list = new ArrayList<Object>();
+		try {
+			conn = AdmBancoSql.getConnection();
+			ps = conn.prepareStatement("SELECT * FROM PSF ORDER BY "+coluna);
+			result = ps.executeQuery();
+			while( result.next() )
+			{
+				int idPSF = result.getInt("idPSF");
+				String nome = result.getString("nome");
+				String cidade = result.getString("cidade");
+				String bairro = result.getString("bairro");
+				String uf = result.getString("uf");
+				String CEP = result.getString("CEP");
+				String fone = result.getString("fone");
+				Date dataCadastro = result.getDate("dataCadastro");
+				
+				list.add(new PostoDeSaude(idPSF, nome, cidade, bairro, uf, CEP, fone, dataCadastro));
+			}
+		} catch (SQLException sqle) {
+			JOptionPane.showMessageDialog(null, "Ocorreu um erro durante a consulta!!\n"+sqle.getMessage());
+		} finally {
+			AdmBancoSql.closeConnection(conn, ps, result);
+		}
+		return list;
+	}
+
+	public Object buscar(int id) {
+		PreparedStatement ps = null;
+		Connection conn = null;
+		ResultSet result = null;
+		PostoDeSaude psf=null;
+		
+		try {
+			conn = AdmBancoSql.getConnection();
+			ps = conn.prepareStatement("SELECT * FROM PSF WHERE idPSF = ?");
+			ps.setInt(1, id);
+			result = ps.executeQuery();
+			
+			try {
+				while( result.next() ){
+					int idPSF = result.getInt("idPSF");
+					String nome = result.getString("nome");
+					String cidade = result.getString("cidade");
+					String bairro = result.getString("bairro");
+					String uf = result.getString("uf");
+					String CEP = result.getString("CEP");
+					String fone = result.getString("fone");
+					Date dataCadastro = result.getDate("dataCadastro");
+					
+					psf=new PostoDeSaude(idPSF, nome, cidade, bairro, uf, CEP, fone, dataCadastro);
+				}
+				
+			} catch (Exception e) {
+				JOptionPane.showMessageDialog(null, "Posto de sa"+(char)250+"de n"+(char)227+"o encontrado");
+				
+			}
+			
+		} catch (SQLException sqle) {
+			JOptionPane.showMessageDialog(null, "Ocorreu um erro durante a busca!!\n"+sqle.getMessage());
+		} finally {
+			AdmBancoSql.closeConnection(conn, ps, result);
+		}
+		return psf;
+	}
+
+	public ArrayList<Object> listar(String pesquisarColuna, String organizarPor, String textoPesquisa) {
+		PreparedStatement ps = null;
+		Connection conn = null;
+		ResultSet result = null;	
+		ArrayList<Object> list = new ArrayList<Object>();
+		try {
+			conn = AdmBancoSql.getConnection();
+			ps = conn.prepareStatement("SELECT * FROM PSF WHERE "+pesquisarColuna+" LIKE '%"+textoPesquisa+"%' ORDER BY "+organizarPor);
+			result = ps.executeQuery();
+			while( result.next() )
+			{
+				int idPSF = result.getInt("idPSF");
+				String nome = result.getString("nome");
+				String cidade = result.getString("cidade");
+				String bairro = result.getString("bairro");
+				String uf = result.getString("uf");
+				String CEP = result.getString("CEP");
+				String fone = result.getString("fone");
+				Date dataCadastro = result.getDate("dataCadastro");
+				
+				list.add(new PostoDeSaude(idPSF, nome, cidade, bairro, uf, CEP, fone, dataCadastro));
+			}
+		} catch (SQLException sqle) {
+			JOptionPane.showMessageDialog(null, "Ocorreu um erro durante a consulta!!\n"+sqle.getMessage());
+		} finally {
+			AdmBancoSql.closeConnection(conn, ps, result);
+		}
+		return list;
+		
+	}
+
+	@Override
+	public Object buscar(String nome) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+}

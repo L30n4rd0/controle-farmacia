@@ -1,0 +1,12 @@
+package model.fornecedor;
+
+import java.util.ArrayList;
+
+public abstract class FornecedorDAO {
+	
+	public abstract void inserir(FornecedorVO fornecedor) throws Exception;
+	public abstract void excluir(int id, String nome) throws Exception;
+	public abstract void alterar(FornecedorVO fornecedor) throws Exception;
+	public abstract ArrayList<FornecedorVO> listar(String coluna, String organizarPor, String texto) throws Exception;
+
+}

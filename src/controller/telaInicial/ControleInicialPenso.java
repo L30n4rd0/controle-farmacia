@@ -1,0 +1,23 @@
+package controller.telaInicial;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import view.TelaInicial;
+import view.material.TelaMaterial;
+
+public class ControleInicialPenso implements ActionListener{
+	private TelaInicial telaInicial;
+	
+	public ControleInicialPenso(TelaInicial telaInicial) {
+		this.telaInicial=telaInicial;
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent arg0) {
+		new TelaMaterial("Penso", this.telaInicial.getUsuarioLogado());
+		this.telaInicial.dispose();
+		
+	}
+
+}

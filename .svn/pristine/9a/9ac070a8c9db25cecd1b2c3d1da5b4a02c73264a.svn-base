@@ -1,0 +1,5 @@
+package model.fabricaDAOS;
+
+public class FabricaDAOSOracle extends FabricaDAOS{
+
+}

@@ -1,0 +1,136 @@
+package ControleNegocios;
+
+import java.util.ArrayList;
+
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableRowSorter;
+
+import basicas.Usuario;
+import ControleNegocios.interfaces.InterfaceControleUsuario;
+import admBanco.InterfaceBanco;
+import admBanco.DAOs.UsuarioDAO;
+
+public class ControleUsuario implements InterfaceControleUsuario{
+
+	public String verificarDados(String nome, String login, String senha, String confirmarSenha) {
+		String resultado="";
+		if (nome.equals(""))
+			resultado+="Erro!!\nPor favor digite um nome v"+(char)225+"lido para o usu"+(char)225+"rio.";
+		
+		else if (nome.length()>45) 
+			resultado+="Erro!!\nVoc"+(char)234+" excedeu limite de caracteres para o nome do usu"+(char)225+"rio.";
+		
+		if (login.equals("")){
+			if (resultado.equals("")) resultado="Erro!!";
+		
+			resultado+="\nPor favor digite um nome v"+(char)225+"lido para o login.";
+			
+		}else if (login.length()>45) {
+			if (resultado.equals("")) resultado="Erro!!";
+			
+			resultado+="\nVoc"+(char)234+" excedeu limite de caracteres para o login.";
+		}
+		
+		if (senha.equals("")) {
+			if (resultado.equals("")) resultado="Erro!!";
+			
+			resultado+="\nPor favor digite uma senha v"+(char)225+"lida.";
+			
+		}else if (senha.length()>45) {
+			if (resultado.equals("")) resultado="Erro!!";
+			
+			resultado+="\nVoc"+(char)234+" excedeu limite de caracteres para a senha.";
+			
+		}else if (!senha.equals(confirmarSenha)) {
+			if (resultado.equals("")) resultado="Erro!!";
+			resultado+="\nAs senhas n"+(char)227+"o conferem";
+			
+		}
+		
+		
+		return resultado;
+	}
+
+	public String salvar(String nome, String login, String senha, String confirmarSenha, String nivel) {
+		String resultado=verificarDados(nome, login, senha, confirmarSenha);
+		
+		if (resultado.equals("")) {
+			String senhaGerada="";
+			
+			for (int i = 0; i < senha.length(); i++) senhaGerada+=((int)senha.charAt(i)+55);
+			
+			InterfaceBanco admUsuario=new UsuarioDAO();
+			resultado=admUsuario.inserir(new Usuario(0, nome, login, senhaGerada, nivel));;
+			
+		}
+		
+		return resultado;
+		
+	}
+
+	public String excluir(int id, String nome) {
+		String retorno=null;
+		InterfaceBanco admUsuario=new UsuarioDAO();
+		
+		retorno=admUsuario.excluir(id, nome);
+		
+		return retorno;
+	}
+
+	public JTable obterTabela(String pesquisarPor, String organizarPor, String textoPesquisa) {
+		String[] colunas=new String[4];;
+		JTable tabela=null;
+		DefaultTableModel modelo=null;
+		
+		InterfaceBanco admUsuario=new UsuarioDAO();
+		ArrayList<Object> objectTemp = admUsuario.listar(pesquisarPor, organizarPor, textoPesquisa);
+		
+		colunas[0] = "Id";
+		colunas[1] = "Nome";
+		colunas[2] = "Login";
+		colunas[3] = "N"+(char)237+"vel";
+		
+		modelo = new DefaultTableModel(new Object[][]{}, colunas);
+		for (int i = 0; i < objectTemp.size(); i++) {
+			Usuario usuario = (Usuario)objectTemp.get(i);
+			
+			String linha[]= {""+usuario.getIdUsuario(),
+							""+usuario.getNome(),
+							""+usuario.getLogin(),
+							""+usuario.getNivel()};
+			
+			modelo.addRow(linha);
+		}
+		
+		tabela = new JTable(modelo);
+		tabela.setRowSorter(new TableRowSorter<DefaultTableModel>(modelo));
+		tabela.setFillsViewportHeight(true);
+		tabela.getTableHeader().setReorderingAllowed(false);//NAO PERMITE A REORDENACAO DAS COLUNAS
+		
+		return tabela;
+	}
+
+	public String alterar(int id, String nome, String login, String senha, String confirmarSenha, String nivel) {
+		String resultado=verificarDados(nome, login, senha, confirmarSenha);
+		
+		if (resultado.equals("")) {
+			String senhaGerada="";
+			
+			for (int i = 0; i < senha.length(); i++) senhaGerada+=((int)senha.charAt(i)+55);
+			
+			InterfaceBanco admUsuario=new UsuarioDAO();
+			resultado=admUsuario.alterar(new Usuario(id, nome, login, senhaGerada, nivel));
+			
+		}
+		
+		return resultado;
+	}
+
+	public Usuario buscar(int id) {
+		InterfaceBanco admUsuario=new UsuarioDAO();
+		
+		return (Usuario)admUsuario.buscar(id);
+	}
+
+}

@@ -1,0 +1,134 @@
+package admBanco;
+
+import java.sql.Date;
+import java.util.ArrayList;
+import java.util.Random;
+
+import javax.swing.JOptionPane;
+
+import basicas.Fornecedor;
+import basicas.Material;
+import basicas.PostoDeSaude;
+import basicas.Usuario;
+
+import admBanco.DAOs.FornecedorDAO;
+import admBanco.DAOs.MaterialDAO;
+import admBanco.DAOs.PostoDeSaudeDAO;
+import admBanco.DAOs.SubgrupoDAO;
+import admBanco.DAOs.UsuarioDAO;
+
+
+public class Aplicacao {
+	public static void main(String[] args) {
+		try {
+			javax.swing.UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		InterfaceBanco admFornecedor=new FornecedorDAO();
+		
+		int quantia=5000;
+		
+		ArrayList<String> nomes=obterNomes(quantia);
+		ArrayList<String> cidades=obterCidade(quantia);
+		
+		
+		for (int i = 0; i < quantia; i++) {
+			System.out.println(i+"-"+admFornecedor.inserir(new Fornecedor(0, nomes.get(i), cidades.get(i), "PE", "44.444.555/6666-64", "3435", new Date(System.currentTimeMillis()))));
+			
+		}
+		
+		//InterfaceBanco admSub=new SubgrupoDAO();
+//		System.out.println(admSub.inserir("teste3"));
+//		System.out.println(admSub.excluir(0, "teste"));
+//		System.out.println(admSub.alterar("teste3-tttt"));
+		//System.out.println(admSub.listar("nome", "nome", ""));
+		
+//		admFornecedor.excluir(2, "leolima");
+		
+//		admFornecedor.alterar(new Fornecedor(3, "leolirfrfrma", "serra", "pe", "34343", "3435", new Date(3333333)));
+		
+//		ArrayList<Object>lista2=admFornecedor.listar("nome", "uf", "gt");
+//		
+//		Fornecedor tempFornecedor;
+//		
+//		for (int i = 0; i < lista2.size(); i++) {
+//			tempFornecedor=(Fornecedor)lista2.get(i);
+//			System.out.println(tempFornecedor.getNome()+"\t"+tempFornecedor.getCidade()+"\t"+tempFornecedor.getDataCadastro());
+//		}
+		
+	}
+	
+	public static ArrayList<String> obterNomes(int quantia) {
+		String[] teste={
+				"leonardo",
+				"souza",
+				"lima",
+				"pedro",
+				"gustavo",
+				"jose",
+				"maria",
+				"leandro",
+				"renato",
+				"marcelo",
+				"yuri",
+				"isrrael",
+				"jesus",
+				"marinho",
+				"nascimento",
+				"leite",
+				"barbosa",
+				"douglas",
+				"elida",
+				
+		};
+		
+		ArrayList<String> retorno=new ArrayList<>();
+		Random testeRandom=new Random();
+		String temp=null;
+		
+		for (int i = 0; i < quantia; i++) {
+			
+			temp=teste[testeRandom.nextInt(19)]+" ";
+			temp+=teste[testeRandom.nextInt(19)]+" ";
+			temp+=teste[testeRandom.nextInt(19)];
+			
+			retorno.add(temp);
+		}
+		
+		return retorno;
+	}
+	
+	public static ArrayList<String> obterCidade(int quantia) {
+		String[] teste={"a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q",
+				"r","s","t","u","v","w","x","y","z",};
+		
+		ArrayList<String> retorno=new ArrayList<>();
+		Random testeRandom=new Random();
+		String temp=null, temp2="";
+		
+		for (int i = 0; i < quantia; i++) {
+			
+			for (int j = 0, tempInt; j < 2; j++) {
+				tempInt=testeRandom.nextInt(6);
+				
+				for (int j1 = 0; j1 < 10-tempInt; j1++) {
+					temp2+=teste[testeRandom.nextInt(26)];
+					
+				}
+				if (j==0) {
+					temp=temp2+" ";
+					
+				}else {
+					temp+=temp2;
+				}
+				
+				temp2="";
+			}
+			retorno.add(temp);
+		}
+		
+		return retorno;
+		
+	}
+}

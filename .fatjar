@@ -1,0 +1,14 @@
+#Fat Jar Configuration File
+#Fri Mar 22 16:16:18 BRT 2013
+onejar.license.required=true
+manifest.classpath=
+manifest.removesigners=true
+onejar.checkbox=false
+jarname=Farmacia.jar
+manifest.mergeall=true
+manifest.mainclass=inicio.Login
+manifest.file=<createnew>
+jarname.isextern=false
+onejar.expand=
+excludes=
+includes=

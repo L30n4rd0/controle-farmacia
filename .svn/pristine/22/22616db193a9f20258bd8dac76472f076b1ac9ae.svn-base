@@ -1,0 +1,13 @@
+Codigo do erro: 1146
+Data de ocorrência: 2014-01-25
+Outras informações: 
+Erro ao inserir as informações do erro no banco de dados!
+Mais detalhes serão salvos na pasta erros
+LocalizedMessage: Table 'bdfarmacia.erro0' doesn't exist
+SQLExceptionMessage:Table 'bdfarmacia.erro0' doesn't exist
+SQLState: 42S02
+Cause: null
+Class: class com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException
+NextException: null
+StackTrace: [Ljava.lang.StackTraceElement;@510765e2
+Suppressed: [Ljava.lang.Throwable;@6a0c282b

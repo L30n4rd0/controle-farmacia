@@ -1,0 +1,147 @@
+package cadastro;
+
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPasswordField;
+import javax.swing.JTextField;
+
+import basicas.Usuario;
+
+import ControleNegocios.ControleUsuario;
+import ControleNegocios.interfaces.InterfaceControleUsuario;
+
+
+public class TelaCadastroUsuario extends TelaCadastro{
+	private static final long serialVersionUID = 1L;
+	private JTextField login, textFieldNome;
+	private JPasswordField senha;
+	private JPasswordField confirmarSenha;
+	private JButton btnSalvar;
+	private JComboBox comboBoxNivel;
+	
+	public TelaCadastroUsuario(final Usuario editarUsuario) {
+		panel.setBounds(37, 67, 517, 336);
+		setTitle("Cadastro de Usu"+(char)225+"rio");
+				
+		JLabel lblNewLabel = new JLabel("Login");
+		lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		lblNewLabel.setBounds(162, 78, 33, 24);
+		panel.add(lblNewLabel);
+		
+		JLabel lblSenha = new JLabel("Senha");
+		lblSenha.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		lblSenha.setBounds(157, 121, 38, 14);
+		panel.add(lblSenha);
+		
+		JLabel lblRepetirSenha = new JLabel("Repetir senha");
+		lblRepetirSenha.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		lblRepetirSenha.setBounds(112, 162, 83, 14);
+		panel.add(lblRepetirSenha);
+		
+		JLabel lblNvel = new JLabel("N\u00EDvel");
+		lblNvel.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		lblNvel.setBounds(165, 200, 30, 14);
+		panel.add(lblNvel);
+		
+		
+		login = new JTextField();
+		login.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		login.setColumns(10);
+		login.setBounds(207, 76, 132, 29);
+		panel.add(login);
+		
+		this.senha = new JPasswordField();
+		this.senha.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		this.senha.setColumns(10);
+		this.senha.setBounds(207, 114, 132, 29);
+		panel.add(this.senha);
+		
+		this.confirmarSenha = new JPasswordField();
+		this.confirmarSenha.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		this.confirmarSenha.setColumns(10);
+		this.confirmarSenha.setBounds(207, 155, 132, 29);
+		panel.add(this.confirmarSenha);
+		
+		comboBoxNivel = new JComboBox();
+		comboBoxNivel.addItem("Limitado");
+		comboBoxNivel.addItem("Administrador");
+		comboBoxNivel.setBounds(207, 196, 132, 24);
+		panel.add(comboBoxNivel);
+		
+		JLabel lblNome = new JLabel("Nome");
+		lblNome.setFont(new Font("SansSerif", Font.PLAIN, 14));
+		lblNome.setBounds(158, 41, 37, 14);
+		panel.add(lblNome);
+		
+		textFieldNome = new JTextField();
+		textFieldNome.setBounds(207, 35, 132, 29);
+		panel.add(textFieldNome);
+		textFieldNome.setColumns(10);
+		
+		if (editarUsuario!=null) {
+			textFieldNome.setText(editarUsuario.getNome());
+			login.setText(editarUsuario.getLogin());
+			senha.setText("");
+			confirmarSenha.setText("");
+			comboBoxNivel.removeAllItems();
+			comboBoxNivel.addItem(editarUsuario.getNivel().toString());
+			
+		}
+		
+		this.btnSalvar = new JButton("Salvar");
+		this.btnSalvar.setBounds(250, 280, 89, 23);
+		panel.add(this.btnSalvar);
+		this.btnSalvar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				InterfaceControleUsuario admUsuario=new ControleUsuario();
+				String resultado;
+				
+				if (editarUsuario!=null) {
+					resultado=admUsuario.alterar(editarUsuario.getIdUsuario(), textFieldNome.getText(), login.getText(), senha.getText(), confirmarSenha.getText(), comboBoxNivel.getSelectedItem().toString());
+					
+				}else {
+					resultado=admUsuario.salvar(getTextFieldNome().getText(), getLogin().getText(), getSenha().getText(), getConfirmarSenha().getText(), getComboBoxNivel().getSelectedItem().toString());
+					
+				}
+				
+				if (resultado.substring(0, 4).equals("Erro")) {
+					JOptionPane.showMessageDialog(null, resultado, "Aten"+(char)231+""+(char)227+"o", JOptionPane.ERROR_MESSAGE);
+				}else {
+					JOptionPane.showMessageDialog(null, resultado, "Informa"+(char)231+""+(char)227+"o", JOptionPane.INFORMATION_MESSAGE);
+					dispose();
+				}
+			}
+		});
+		
+		
+		panel.repaint();
+		setVisible(true);
+		
+	}
+	
+	public JTextField getLogin() {
+		return login;
+	}
+
+	public JPasswordField getSenha() {
+		return senha;
+	}
+
+	public JPasswordField getConfirmarSenha() {
+		return confirmarSenha;
+	}
+	
+	public JComboBox getComboBoxNivel() {
+		return comboBoxNivel;
+	}
+	
+	public JTextField getTextFieldNome() {
+		return textFieldNome;
+	}
+}

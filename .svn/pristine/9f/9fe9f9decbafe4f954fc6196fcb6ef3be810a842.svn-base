@@ -1,0 +1,28 @@
+package model.erros;
+
+import java.util.ArrayList;
+
+public class ErroDAOOracle extends ErroDAO{
+
+	@Override
+	public void inserir(ErroVO erro) throws Exception {
+		
+	}
+
+	@Override
+	public void excluir(int id) throws Exception {
+		
+	}
+
+	@Override
+	public void alterar(ErroVO erro) throws Exception {
+		
+	}
+
+	@Override
+	public ArrayList<ErroVO> listar(String coluna, String organizarPor,
+			String texto) throws Exception {
+		return null;
+	}
+
+}

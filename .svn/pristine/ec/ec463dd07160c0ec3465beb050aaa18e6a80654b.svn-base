@@ -1,0 +1,109 @@
+package ControleNegocios;
+
+import java.sql.Date;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+
+import javax.swing.JOptionPane;
+import basicas.Entrada;
+import basicas.Fornecedor;
+import basicas.ItemEntrada;
+import basicas.Material;
+import basicas.Usuario;
+
+import admBanco.InterfaceBanco;
+import admBanco.DAOs.EntradaDAO;
+
+import ControleNegocios.interfaces.InterfaceControleEntrada;
+import ControleNegocios.interfaces.InterfaceControleFornecedor;
+import ControleNegocios.interfaces.InterfaceControleMaterial;
+
+public class ControleEntrada implements InterfaceControleEntrada {
+
+	String resultado;
+	
+	public String salvar(String nota, String dataNota,
+			String recebimento, String valorTotal,
+			String nomeFornecedor, String observacoes, Usuario idUsuario) {
+		
+		InterfaceBanco admEntrada = new EntradaDAO();
+		InterfaceControleFornecedor admFornecedor = new ControleFornecedor();
+		DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+		
+		resultado = verificarDados(nota, dataNota, recebimento, valorTotal, nomeFornecedor, observacoes, idUsuario);
+		
+		
+		if(resultado.equals("")){
+			
+			try {
+				admEntrada.inserir(new Entrada(0, new Integer(nota), new java.sql.Date((formatter.parse(dataNota)).getTime()),
+						new java.sql.Date((formatter.parse(recebimento)).getTime()), 
+						new Double(valorTotal), (Fornecedor)admFornecedor.buscar(nomeFornecedor), observacoes, idUsuario));
+			} catch (NumberFormatException | ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		else{
+			JOptionPane.showMessageDialog(null, resultado);
+		}
+		return resultado;
+	}
+	
+	public String salvarItens(String descricao, String unidade,
+			String lote, Date validade, int quantPedida, int quantEntregue,
+			double precoUnitario, double total) {
+		
+		EntradaDAO item = new EntradaDAO();
+		InterfaceControleMaterial admMaterial = new ControleMaterial();
+		String aviso = "";
+		
+		if(resultado.equals("")){
+			aviso = item.inserirItem(new ItemEntrada(0, (Entrada) item.listar(), (Material)admMaterial.buscar(descricao), (Material)admMaterial.buscar(descricao),
+				lote, validade, quantPedida, quantEntregue, (Material)admMaterial.buscar(descricao), total));
+		}
+		
+		return aviso;
+	}
+
+	
+	public String verificarDados(String nota, String dataNota, String recebimento,
+			String valorTotal, String nomeFornecedor, String observacoes,
+			Usuario idUsuario) {
+		
+		String resultado="";
+		if(nota.equals("")){
+			resultado+="Erro!!\nPor favor digite n"+(char)250+"mero v"+(char)225+"lido para a nota.";
+		}
+		else if(nota.length() > 9){
+			resultado+="Erro!!\nN"+(char)250+"mero da nota excedeu o numero m"+(char)225+"ximo permitido";
+		}
+		if(dataNota.equals("  /  /    ")){
+			if (resultado.equals("")) resultado="Erro!!";
+			resultado+="\nPor favor digite uma data da nota v"+(char)225+"lida.";
+		}
+		if(recebimento.equals("  /  /    ")){
+			if (resultado.equals("")) resultado="Erro!!";
+			resultado+="\nPor favor digite uma data de recebimento v"+(char)225+"lida.";
+		}
+		if(valorTotal.equals("0")){
+			if (resultado.equals("")) resultado="Erro!!";
+			resultado+="\nPreencha a lista de itens.";
+		}
+		if(nomeFornecedor == null){
+			if (resultado.equals("")) resultado="Erro!!";
+			resultado+="\nPor favor selecione um nome v"+(char)225+"lido para o fornecedor.";
+		}
+		if(observacoes.length() > 255){
+			if (resultado.equals("")) resultado="Erro!!";
+			resultado+="\nCampo observa"+(char)231+""+(char)245+"es excedeu limite m"+(char)225+"ximo permitido";
+		}
+			
+		return resultado;
+	}
+
+
+
+}

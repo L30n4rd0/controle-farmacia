@@ -1,0 +1,52 @@
+package basicas;
+
+import java.sql.Date;
+
+public class Fornecedor {
+	private int idFornecedor;
+	private String nome, cidade, uf, cnpj, inscricao;
+	private Date dataCadastro;
+	
+	public Fornecedor(int idFornecedor, String nome, String cidade, String uf, String cnpj, String inscricao, Date dataCadastro) {
+		this.idFornecedor=idFornecedor;
+		this.nome=nome;
+		this.cidade=cidade;
+		this.uf=uf;
+		this.dataCadastro=dataCadastro;
+		this.cnpj=cnpj;
+		this.inscricao=inscricao;
+	}
+	
+	public Fornecedor(){
+		
+	}
+
+	public int getIdFornecedor() {
+		return this.idFornecedor;
+	}
+	
+	public String getNome() {
+		return this.nome;
+	}
+
+	public String getCidade() {
+		return this.cidade;
+	}
+
+	public String getUf() {
+		return this.uf;
+	}
+
+	public Date getDataCadastro() {
+		return this.dataCadastro;
+	}
+
+	public String getCnpj() {
+		return this.cnpj;
+	}
+
+	public String getInscricao() {
+		return this.inscricao;
+	}
+
+}

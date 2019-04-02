@@ -1,0 +1,116 @@
+package basicas;
+
+import java.sql.Date;
+
+public class Entrada {
+
+	private int idEntrada;
+	private int nota;
+	private Date dataNota;
+	private Date recebimento;
+	private double total;
+	private int idFornecedor;
+	private String observacoes;
+	private int idUsuario;
+	
+	public Entrada() {
+		// TODO Auto-generated constructor stub
+	}
+	
+	public Entrada(int idEntrada, int nota, Date dataNota, Date recebimento, double total, Fornecedor idFornecedor,String obs, Usuario idUsuario) {
+		
+		this.idEntrada = idEntrada;
+		this.nota = nota;
+		this.dataNota = dataNota;
+		this.recebimento = recebimento;
+		this.total = total;
+		this.idFornecedor = idFornecedor.getIdFornecedor();
+		this.observacoes = obs;
+		this.idUsuario = idUsuario.getIdUsuario();
+		
+	}
+
+	public Entrada(int idEntrada, int nota, Date dataNota,
+			Date recebimento, Double total, int idFornecedor, String obs,
+			int idUsuario) {
+		
+		this.idEntrada = idEntrada;
+		this.nota = nota;
+		this.dataNota = dataNota;
+		this.recebimento = recebimento;
+		this.total = total;
+		this.idFornecedor = idFornecedor;
+		this.observacoes = obs;
+		this.idUsuario = idUsuario;
+		
+	}
+
+	public int getIdFornecedor() {
+		return idFornecedor;
+	}
+
+
+	public void setIdFornecedor(int idFornecedor) {
+		this.idFornecedor = idFornecedor;
+	}
+
+	public int getIdEntrada() {
+		return idEntrada;
+	}
+
+	public void setIdEntrada(int idEntrada) {
+		this.idEntrada = idEntrada;
+	}
+
+	public int getNota() {
+		return nota;
+	}
+
+	public void setNota(int nota) {
+		this.nota = nota;
+	}
+
+	public Date getDataNota() {
+		return dataNota;
+	}
+
+	public void setDataNota(Date dataNota) {
+		this.dataNota = dataNota;
+	}
+
+	public Date getRecebimento() {
+		return recebimento;
+	}
+
+	public void setRecebimento(Date recebimento) {
+		this.recebimento = recebimento;
+	}
+
+	public double getTotal() {
+		return total;
+	}
+
+	public void setTotal(double total) {
+		this.total = total;
+	}
+
+	public int getIdUsuario() {
+		return idUsuario;
+	}
+
+	public void setIdUsuario(int idUsuario) {
+		this.idUsuario = idUsuario;
+	}
+	
+	public String getObservacoes() {
+		return observacoes;
+	}
+
+	public void setObservacoes(String observacoes) {
+		this.observacoes = observacoes;
+	}
+
+
+	
+	
+}

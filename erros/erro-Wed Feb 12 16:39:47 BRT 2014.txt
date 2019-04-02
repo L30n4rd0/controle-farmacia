@@ -1,0 +1,29 @@
+Codigo do erro: 1146
+Data de ocorrência: 2014-02-12
+Outras informações: 
+Erro ao inserir os dados do Fornecedor Leonardo no banco de dados!
+LocalizedMessage: Table 'bdfarmacia.fornecedor' doesn't exist
+SQLExceptionMessage:Table 'bdfarmacia.fornecedor' doesn't exist
+SQLState: 42S02
+Cause: null
+Class: class com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException
+NextException: null
+StackTrace: [Ljava.lang.StackTraceElement;@7adbe76f
+Suppressed: [Ljava.lang.Throwable;@7b37676c
+
+
+Codigo do erro: 1146
+Data de ocorrência: 2014-02-12
+Outras informações: 
+Erro ao inserir as informações do erro no banco de dados!
+Mais detalhes serão salvos na pasta erros!
+LocalizedMessage: Table 'bdfarmacia.erro' doesn't exist
+SQLExceptionMessage:Table 'bdfarmacia.erro' doesn't exist
+SQLState: 42S02
+Cause: null
+Class: class com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException
+NextException: null
+StackTrace: [Ljava.lang.StackTraceElement;@115783a2
+Suppressed: [Ljava.lang.Throwable;@7b37676c
+
+

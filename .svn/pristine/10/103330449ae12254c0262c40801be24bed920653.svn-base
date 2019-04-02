@@ -1,0 +1,81 @@
+package model.erros;
+
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.ArrayList;
+
+import model.fabricaDAOS.AdmBancoSql;
+
+public class ErroDAOMysql extends ErroDAO{
+
+	@Override
+	public void inserir(ErroVO erro) throws Exception {
+		PreparedStatement ps = null;
+		Connection conn = null;
+		
+		try{
+			String stringSQL="INSERT INTO erro (idErro,codigo,data,informacoes,status) VALUES (?,?,?,?,?)";
+			
+			conn = AdmBancoSql.getConnection();
+			ps = conn.prepareStatement(stringSQL);
+			
+			ps.setInt(1, erro.getId());
+			ps.setInt(2, erro.getCodigoError());
+			ps.setDate(3, erro.getData());
+			ps.setString(4, erro.getInformacoes());
+			ps.setString(5, erro.getStatus());
+			ps.executeUpdate();
+		
+		} catch (SQLException excecao) {
+//			excecao.printStackTrace();
+			
+			int codigoErro=excecao.getErrorCode();
+			String mensagemUsuario="Erro ao inserir as informa"+(char)231+""+(char)245+"es do erro no banco de dados!\nMais detalhes ser"+(char)227+"o salvos na pasta erros",
+					informacoesErro=mensagemUsuario;
+			
+			informacoesErro+="\nLocalizedMessage: "+excecao.getLocalizedMessage()+
+					"\nSQLExceptionMessage:"+excecao.getMessage()+
+					"\nSQLState: "+excecao.getSQLState()+
+					"\nCause: "+excecao.getCause()+
+					"\nClass: "+excecao.getClass()+
+					"\nNextException: "+excecao.getNextException()+
+					"\nStackTrace: "+excecao.getStackTrace()+
+					"\nSuppressed: "+excecao.getSuppressed();
+			
+			ErroDAOArquivo erroDAOArquivo=new ErroDAOArquivo();
+			
+			try {
+				erroDAOArquivo.inserir(new ErroVO(0, codigoErro, new Date(System.currentTimeMillis()), informacoesErro));
+				
+			} catch (Exception e) {
+				mensagemUsuario+="\n"+e.getMessage();
+				
+			}
+			
+			throw new Exception(mensagemUsuario);
+			
+		} finally {
+			AdmBancoSql.closeConnection(conn, ps, null);
+		}
+		
+	}
+
+	@Override
+	public void excluir(int id) throws Exception {
+		
+	}
+
+	@Override
+	public void alterar(ErroVO erro) throws Exception {
+		
+	}
+
+	@Override
+	public ArrayList<ErroVO> listar(String coluna, String organizarPor,
+			String texto) throws Exception {
+		return null;
+	}
+
+}

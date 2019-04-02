@@ -1,0 +1,5 @@
+package model.subgrupo;
+
+public class SubgrupoDAOOracle extends SubgrupoDAO{
+
+}

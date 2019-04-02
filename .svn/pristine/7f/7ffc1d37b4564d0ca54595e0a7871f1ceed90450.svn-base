@@ -1,0 +1,12 @@
+package model.erros;
+
+import java.util.ArrayList;
+
+public abstract class Observador
+{   
+    /**
+     * FUNCAO USADA PARA NOTIFICAR ESSA CLASSE QUE A CLASSE QUE ELA OBSERVA MUDOU
+     * @throws Exception 
+     */
+    public abstract void processarErro(ArrayList<ErroVO> erro) throws Exception;
+}

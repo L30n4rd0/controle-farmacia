@@ -1,0 +1,159 @@
+package consultas;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+
+import javax.swing.JOptionPane;
+
+import basicas.Usuario;
+
+import cadastro.TelaCadastroUsuario;
+
+import ControleNegocios.ControleUsuario;
+import ControleNegocios.interfaces.InterfaceControleUsuario;
+
+public class TelaConsultaUsuario extends TelaConsulta{
+	private static final long serialVersionUID = 1L;
+	private InterfaceControleUsuario controleUsuario;
+	
+	@SuppressWarnings("unchecked")
+	public TelaConsultaUsuario(Usuario userLogado) {
+		super(userLogado);
+		setTitle("Usu"+(char)225+"rio");
+		
+		controleUsuario=new ControleUsuario();
+		
+		getComboBoxPesquisa().addItem("Nome");
+		getComboBoxPesquisa().addItem("ID");
+		getComboBoxPesquisa().addItem("Login");
+		getComboBoxPesquisa().addItem("N"+(char)237+"vel");
+		
+		getComboBoxOrganiza().addItem("ID");
+		getComboBoxOrganiza().addItem("Nome");
+		getComboBoxOrganiza().addItem("Login");
+		getComboBoxOrganiza().addItem("N"+(char)237+"vel");
+		
+		getTextFieldPesquisa().setText("");
+		
+		atualizaTabela(getComboBoxPesquisa().getSelectedItem().toString(), getComboBoxOrganiza().getSelectedItem().toString(), getTextFieldPesquisa().getText());
+		setVisible(true);
+	}
+	
+	public void actionPerformed(ActionEvent e) {
+		if (e.getSource()==getBtnDeletar()) {
+			if (getTabela().getSelectedRow()==-1) {
+				JOptionPane.showMessageDialog(null, "Por favor selecione uma linha.");
+				
+			}else {
+				String resultado="";
+				if (controleUsuario.buscar(Integer.parseInt(getTabela().getValueAt(getTabela().getSelectedRow(), 0).toString())).getSenha().equals(getUsuarioLogado().getSenha())) {
+					
+					if (JOptionPane.showConfirmDialog(null, "Este usu"+(char)225+"rio est"+(char)225+" logado no momento, sua exclus"+(char)227+"o encerrar"+(char)225+" o sistema.\nVoc"+(char)234+" deseja continuar?")==0) {
+						
+							resultado=controleUsuario.excluir(Integer.parseInt(getTabela().getValueAt(getTabela().getSelectedRow(), 0).toString()), getTabela().getValueAt(getTabela().getSelectedRow(), 1).toString());
+							
+							if (!resultado.substring(0, 4).equals("Erro")){
+								JOptionPane.showMessageDialog(null, resultado, "Informa"+(char)231+""+(char)227+"o", JOptionPane.INFORMATION_MESSAGE);
+								System.exit(0);
+								
+							}
+					}
+					
+				}else if (getUsuarioLogado().getNivel().equalsIgnoreCase("Administrador")) {
+					
+					resultado=controleUsuario.excluir(Integer.parseInt(getTabela().getValueAt(getTabela().getSelectedRow(), 0).toString()), getTabela().getValueAt(getTabela().getSelectedRow(), 1).toString());
+					
+				}else {
+					resultado="Erro!!\nVoc"+(char)234+" n"+(char)227+"o tem permiss"+(char)227+"o para deletar este usu"+(char)225+"rio.";
+				}
+				
+				if (!resultado.equals("")) {
+					if (resultado.substring(0, 4).equals("Erro")) {
+						JOptionPane.showMessageDialog(null, resultado, "Erro", JOptionPane.ERROR_MESSAGE);
+						
+					}else {
+						JOptionPane.showMessageDialog(null, resultado, "Informa"+(char)231+""+(char)227+"o", JOptionPane.INFORMATION_MESSAGE);
+					}
+					
+				}
+				
+				atualizaTabela(getComboBoxPesquisa().getSelectedItem().toString(), getComboBoxOrganiza().getSelectedItem().toString(), getTextFieldPesquisa().getText());
+			}
+		}else if (e.getSource()==getComboBoxOrganiza()) {
+			atualizaTabela(getComboBoxPesquisa().getSelectedItem().toString(), getComboBoxOrganiza().getSelectedItem().toString(), getTextFieldPesquisa().getText());
+			
+		}else if (e.getSource()==getBtnEditar()) {
+			if (getTabela().getSelectedRow()==-1) {
+				JOptionPane.showMessageDialog(null, "Por favor selecione uma linha.");
+				
+			}else if (getUsuarioLogado().getNivel().equalsIgnoreCase("Administrador") ||
+					controleUsuario.buscar(Integer.parseInt(getTabela().getValueAt(getTabela().getSelectedRow(), 0).toString())).getSenha().equals(getUsuarioLogado().getSenha())) {
+				
+				new TelaCadastroUsuario(new Usuario(
+						Integer.parseInt(getTabela().getValueAt(getTabela().getSelectedRow(), 0).toString()),//id do usuario selecionado
+						getTabela().getValueAt(getTabela().getSelectedRow(), 1).toString(),//nome do usuario selecionado
+						getTabela().getValueAt(getTabela().getSelectedRow(), 2).toString(),//login do usuario selecionado
+						getTabela().getValueAt(getTabela().getSelectedRow(), 3).toString(),//senha do usuario selecionado
+						getTabela().getValueAt(getTabela().getSelectedRow(), 3).toString()//confirmarSenha do usuario selecionado
+						));
+				atualizaTabela(getComboBoxPesquisa().getSelectedItem().toString(), getComboBoxOrganiza().getSelectedItem().toString(), getTextFieldPesquisa().getText());
+				
+			}else {
+				JOptionPane.showMessageDialog(null, "Voc"+(char)234+" n"+(char)227+"o tem permiss"+(char)227+"o para editar este usu"+(char)225+"rio.", "Erro", JOptionPane.ERROR_MESSAGE);
+			}
+		}
+	}
+	
+	public void keyReleased(KeyEvent e) {
+		if (e.getSource()==getTextFieldPesquisa()) {
+			atualizaTabela(getComboBoxPesquisa().getSelectedItem().toString(), getComboBoxOrganiza().getSelectedItem().toString(), getTextFieldPesquisa().getText());
+		}
+		
+	}
+	
+	public void atualizaTabela(String pesquisarPor, String organizarPor, String textoPesquisa) {
+		
+		if (pesquisarPor.equals("Nome"))
+			pesquisarPor="nome";
+			
+		else if (pesquisarPor.equals("ID"))
+			pesquisarPor="idUsuario";
+		
+		else if (pesquisarPor.equals("Login"))
+			pesquisarPor="login";
+		
+		else if (pesquisarPor.equals("N"+(char)237+"vel"))
+			pesquisarPor="nivel";
+		
+//**********************************************
+		
+		if (organizarPor.equals("Nome"))
+			organizarPor="nome";
+			
+		else if (organizarPor.equals("ID"))
+			organizarPor="idUsuario";
+		
+		else if (organizarPor.equals("Login"))
+			organizarPor="login";
+		
+		else if (organizarPor.equals("N"+(char)237+"vel"))
+			organizarPor="nivel";
+		
+		try {
+			remove(getScrollPane());
+			
+		} catch (Exception e) {}
+		
+		setTabela(controleUsuario.obterTabela(pesquisarPor, organizarPor, textoPesquisa));
+		
+		getScrollPane().setViewportView(getTabela());
+		getScrollPane().repaint();
+		add(getScrollPane());
+		
+	}
+	
+	public static void main(String[] args) {
+		//new TelaConsultaUsuario(getNivel());
+	}
+
+}

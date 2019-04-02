@@ -1,0 +1,167 @@
+package admBanco.DAOs;
+
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+
+import javax.swing.JOptionPane;
+
+import cadastro.InserirItens;
+
+import basicas.Entrada;
+import basicas.Fornecedor;
+import basicas.ItemEntrada;
+
+import admBanco.AdmBancoSql;
+import admBanco.InterfaceBanco;
+
+public class EntradaDAO implements InterfaceBanco{
+	
+	public String inserir(Object objct) {
+		
+		Entrada entrada = (Entrada) objct;
+		
+		String retorno = "";
+		PreparedStatement ps = null;
+		Connection conn = null;
+		
+		try{
+			String stringSQL="INSERT INTO Entrada (idEntrada, nota , dataNota, recebimento, valorTotal, idFornecedor," +
+					" observacoes, idUsuario) VALUES (?,?,?,?,?,?,?,?)";
+			
+			conn = AdmBancoSql.getConnection();
+			ps = conn.prepareStatement(stringSQL);
+			
+			ps.setInt(1, entrada.getIdEntrada());
+			ps.setInt(2, entrada.getNota());
+			ps.setDate(3, entrada.getDataNota());
+			ps.setDate(4, entrada.getRecebimento());
+			ps.setDouble(5, entrada.getTotal());
+			ps.setInt(6, entrada.getIdFornecedor());
+			ps.setString(7, entrada.getObservacoes());
+			ps.setInt(8, entrada.getIdUsuario());
+
+			ps.executeUpdate();
+			
+			retorno = "Dados registrados com sucesso.";
+		} catch (SQLException sqle) {
+			retorno = "Erro ao registrar os dados\n"+sqle.getMessage();
+		} finally {
+			AdmBancoSql.closeConnection(conn, ps, null);
+		}
+		return retorno;
+	}
+		
+	public String inserirItem(Object objct){
+		
+		ItemEntrada item = (ItemEntrada) objct;
+		
+		String retorno = "";
+		PreparedStatement ps = null;
+		Connection conn = null;
+		
+		try{
+			String stringSQL="INSERT INTO ItensEntrada (idItensEntrada, idEntrada, descricao , unidade, lote, validade, quantPedida, quantEntregue," +
+					" precoUnitario, total) VALUES (?,?,?,?,?,?,?,?,?,?)";
+			
+			conn = AdmBancoSql.getConnection();
+			ps = conn.prepareStatement(stringSQL);
+			
+			ps.setInt(1, item.getIdItem());
+			ps.setInt(2, item.getIdEntrada());
+			ps.setString(3, item.getDescricao());
+			ps.setString(4, item.getUnidade());
+			ps.setString(5, item.getLote());
+			ps.setDate(6, item.getValidade());
+			ps.setInt(7, item.getQuantPedida());
+			ps.setInt(8, item.getQuantEntregue());
+			ps.setDouble(9, item.getPrecoUnitario());
+			ps.setDouble(10, item.getTotal());
+
+			ps.executeUpdate();
+			
+			retorno = "Dados registrados com sucesso.";
+		} catch (SQLException sqle) {
+			retorno = "Erro ao registrar os dados\n"+sqle.getMessage();
+		} finally {
+			AdmBancoSql.closeConnection(conn, ps, null);
+		}
+		return retorno;
+		
+		
+	}
+	
+	public Object listar() {
+		PreparedStatement ps = null;
+		Connection conn = null;
+		ResultSet result = null;
+		Object objct = null;
+		
+		int idEntrada = 0, idFornecedor = 0, idUsuario = 0, nota = 0;
+		Date dataNota = null, recebimento = null;
+		double total = 0;
+		String obs = null;
+		
+		try {
+			conn = AdmBancoSql.getConnection();
+			ps = conn.prepareStatement("SELECT MAX(idEntrada) FROM Entrada");
+			result = ps.executeQuery();
+			
+			while(result.next()){
+				idEntrada = result.getInt("MAX(idEntrada)");
+				/*nota = result.getInt("nota");
+				dataNota = result.getDate("dataNota");
+				recebimento = result.getDate("recebimento");
+				total = result.getDouble("totalNota");
+				idFornecedor = result.getInt("idFornecedor");
+				obs = result.getString("obs");
+				idUsuario = result.getInt("idUsuario");*/
+				objct = new Entrada(idEntrada, nota, dataNota, recebimento, total, idFornecedor, obs, idUsuario);
+			}	
+			
+			
+		} catch (SQLException sqle) {
+			JOptionPane.showMessageDialog(null, "Erro durante a consulta!!\n"+sqle.getMessage());
+		} finally {
+			AdmBancoSql.closeConnection(conn, ps, result);
+		}
+		return objct;
+		
+	}
+
+	@Override
+	public String excluir(int id, String nome) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String alterar(Object objct) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ArrayList<Object> listar(String pesquisarColuna,
+			String organizarPor, String textoPesquisa) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Object buscar(int id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public Object buscar(String nome) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+}

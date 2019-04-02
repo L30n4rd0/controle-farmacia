@@ -1,0 +1,107 @@
+package ControleNegocios;
+
+import java.util.ArrayList;
+
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableRowSorter;
+
+import basicas.PostoDeSaude;
+
+import admBanco.InterfaceBanco;
+import admBanco.DAOs.PostoDeSaudeDAO;
+import admBanco.DAOs.SubgrupoDAO;
+
+import ControleNegocios.interfaces.InterfaceControleSubgrupo;
+
+public class ControleSubgrupo implements InterfaceControleSubgrupo{
+
+	public String verificarDados(String nome) {
+		String resultado="";
+		if (nome.equals(""))
+			resultado+="Erro!!\nPor favor digite um nome v"+(char)225+"lido para o subgrupo.";
+		
+		else if (nome.length()>45) 
+			resultado+="Erro!!\nVoc"+(char)234+" excedeu limite de caracteres para a descri"+(char)231+""+(char)227+"o.";
+			
+		return resultado;
+	}
+
+	public String salvar(String nome) {
+		String resultado=verificarDados(nome);
+		
+		if (resultado.equals("")) {
+			InterfaceBanco admSubgrupo=new SubgrupoDAO();
+			resultado=admSubgrupo.inserir(nome);;
+			
+		}
+		
+		return resultado;
+	}
+
+	public String excluir(String nome) {
+		String retorno="";
+		InterfaceBanco admSubgrupo=new SubgrupoDAO();
+		
+		retorno=admSubgrupo.excluir(0, nome);
+		
+		return retorno;
+	}
+
+	public String alterar(String nomeAtualNomeNovo) {
+		String resultado=verificarDados(nomeAtualNomeNovo);
+		
+		if (resultado.equals("")) {
+			InterfaceBanco admSubgrupo=new SubgrupoDAO();
+			resultado=admSubgrupo.alterar(nomeAtualNomeNovo);
+			
+		}
+		
+		return resultado;
+	}
+
+	public JTable obterTabela(String textoPesquisa) {
+		String[] colunas=new String[1];;
+		JTable tabela=null;
+		DefaultTableModel modelo=null;
+		
+		InterfaceBanco admSubgrupo=new SubgrupoDAO();
+		ArrayList<Object> objectTemp = admSubgrupo.listar("nome", "nome", textoPesquisa);
+		
+		colunas[0] = "Nome";
+		
+		modelo = new DefaultTableModel(new Object[][]{}, colunas);
+		for (int i = 0; i < objectTemp.size(); i++) {
+			
+			String linha[]= {""+objectTemp.get(i)};
+			
+			modelo.addRow(linha);
+		}
+		
+		tabela = new JTable(modelo);
+		tabela.setFillsViewportHeight(true);
+		tabela.setRowSorter(new TableRowSorter<DefaultTableModel>(modelo));
+//		tabela.getTableHeader().setReorderingAllowed(true);
+//		tabela.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+		tabela.getTableHeader().setReorderingAllowed(false);//NAO PERMITE A REORDENACAO DAS COLUNAS
+		
+		return tabela;
+	}
+
+	public String[] listar(String nomePesquisa) {
+		String[] lista;
+		
+		InterfaceBanco admSubgrupo=new SubgrupoDAO();
+		ArrayList<Object> objectTemp = admSubgrupo.listar("nome", "nome", nomePesquisa);
+		
+		lista=new String[objectTemp.size()];
+		
+		for (int i = 0; i < objectTemp.size(); i++) {
+			lista[i]=(String)objectTemp.get(i);
+			
+		}
+		
+		return lista;
+	}
+
+}

@@ -1,0 +1,58 @@
+package model.erros;
+
+import java.sql.SQLException;
+import java.util.ArrayList;
+
+import model.AdmArquivos;
+
+public class Excecao extends Exception{
+	private static final long serialVersionUID = 1L;
+	String mensagemUsuario;
+	SQLException sqlException=null;
+	Exception exception;
+	
+	public Excecao(String mensagemUsuario, SQLException exception) {
+		this.mensagemUsuario=mensagemUsuario;
+		this.sqlException=exception;
+		
+	}
+	
+	public Excecao(String mensagemUsuario, Exception exception) {
+		this.mensagemUsuario=mensagemUsuario;
+		this.exception=exception;
+		
+	}
+	
+	public String getMessage(){
+		String erroSalvar;
+		if (this.sqlException!=null) {
+			erroSalvar=this.mensagemUsuario+
+					"\nErrorCode: "+this.sqlException.getErrorCode()+
+					"\nLocalizedMessage: "+this.sqlException.getLocalizedMessage()+
+					"\nSQLExceptionMessage:"+this.sqlException.getMessage()+
+					"\nSQLState: "+this.sqlException.getSQLState()+
+					"\nCause: "+this.sqlException.getCause()+
+					"\nClass: "+this.sqlException.getClass()+
+					"\nNextException: "+this.sqlException.getNextException()+
+					"\nStackTrace: "+this.sqlException.getStackTrace()+
+					"\nSuppressed: "+this.sqlException.getSuppressed();
+			
+		}else {
+			erroSalvar=this.mensagemUsuario+
+					"\nLocalizedMessage: "+this.exception.getLocalizedMessage()+
+					"\nSQLExceptionMessage:"+this.exception.getMessage()+
+					"\nCause: "+this.exception.getCause()+
+					"\nClass: "+this.exception.getClass()+
+					"\nStackTrace: "+this.exception.getStackTrace()+
+					"\nSuppressed: "+this.exception.getSuppressed();
+		}
+		
+		ArrayList<String> array=new ArrayList<String>();
+		array.add(erroSalvar);
+		
+		AdmArquivos.salvarArquivo(array, "erros.txt");
+		
+		return this.mensagemUsuario+"!!\nUma mensagem com mais detalhes sobre o erro ser"+(char)225+" enviada para o administrador do sistema!!";
+		
+	}
+}

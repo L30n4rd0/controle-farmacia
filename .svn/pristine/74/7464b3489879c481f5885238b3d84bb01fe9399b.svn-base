@@ -1,0 +1,6 @@
+package ControleNegocios.interfaces;
+
+public interface InterfaceControleLogin {
+	public Object validarUsuario(String login, String senha);
+
+}

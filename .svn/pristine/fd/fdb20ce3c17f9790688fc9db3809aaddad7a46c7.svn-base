@@ -1,0 +1,56 @@
+package basicas;
+
+import java.sql.Date;
+
+public class PostoDeSaude {
+	private int idPSF;
+	private String nome, cidade, bairro, uf, CEP, fone;
+	private Date dataCadastro;
+	
+	public PostoDeSaude() {
+		// TODO Auto-generated constructor stub
+	}
+	
+	public PostoDeSaude(int idPSF, String nome, String cidade, String bairro, String uf, String CEP, String fone, Date dataCadastro) {
+		this.idPSF=idPSF;
+		this.nome=nome;
+		this.cidade=cidade;
+		this.bairro=bairro;
+		this.uf=uf;
+		this.CEP=CEP;
+		this.fone=fone;
+		this.dataCadastro=dataCadastro;
+	}
+
+	public int getIdPSF() {
+		return this.idPSF;
+	}
+
+	public String getNome() {
+		return this.nome;
+	}
+
+	public String getCidade() {
+		return this.cidade;
+	}
+
+	public String getBairro() {
+		return this.bairro;
+	}
+
+	public String getUF() {
+		return this.uf;
+	}
+
+	public String getCEP() {
+		return this.CEP;
+	}
+
+	public String getFone() {
+		return this.fone;
+	}
+
+	public Date getDataCadastro() {
+		return this.dataCadastro;
+	}
+}

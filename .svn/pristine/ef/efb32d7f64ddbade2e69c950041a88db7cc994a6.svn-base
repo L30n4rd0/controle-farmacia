@@ -1,0 +1,11 @@
+package model.material;
+
+import java.util.ArrayList;
+
+public abstract class MaterialDAO {
+	public abstract void inserir(MaterialVO material) throws Exception;
+	public abstract void excluir(int id, String nome) throws Exception;
+	public abstract void alterar(MaterialVO material) throws Exception;
+	public abstract ArrayList<MaterialVO> listar(String coluna, String organizarPor, String texto) throws Exception;
+
+}

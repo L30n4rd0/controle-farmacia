@@ -1,0 +1,59 @@
+package model.fornecedor;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.ArrayList;
+
+import model.fabricaDAOS.AdmBancoSql;
+
+public class FornecedorDAOMysql extends FornecedorDAO{
+
+	@Override
+	public String inserir(FornecedorVO fornecedor) {
+		
+		String retorno = "";
+		PreparedStatement ps = null;
+		Connection conn = null;
+		
+		try{
+			String stringSQL="INSERT INTO fornecedor (idFornecedor,nome,cidade,uf,cnpj,inscricao,dataCadastro) VALUES (?,?,?,?,?,?,?)";
+			
+			conn = AdmBancoSql.getConnection();
+			ps = conn.prepareStatement(stringSQL);
+			
+			ps.setInt(1, fornecedor.getId());
+			ps.setString(2, fornecedor.getNome());
+			ps.setString(3, fornecedor.getCidade());
+			ps.setString(4, fornecedor.getUf());
+			ps.setString(5, fornecedor.getCnpj());
+			ps.setString(6, fornecedor.getInscricao());
+			ps.setDate(7, fornecedor.getDataCadastro());
+			ps.executeUpdate();
+			
+			retorno = "Dados cadastrados com sucesso. Cadastro do fornecedor: "+ fornecedor.getNome();
+		} catch (SQLException sqle) {
+			retorno = "Erro ao inserir os dados\n"+sqle.getMessage();
+		} finally {
+			AdmBancoSql.closeConnection(conn, ps, null);
+		}
+		return retorno;
+		
+	}
+
+	@Override
+	public String excluir(int id, String nome) {
+		return null;
+	}
+
+	@Override
+	public String alterar(FornecedorVO fornecedor) {
+		return null;
+	}
+
+	@Override
+	public ArrayList<FornecedorVO> listar(String coluna, String organizarPor, String texto) {
+		return null;
+	}
+
+}

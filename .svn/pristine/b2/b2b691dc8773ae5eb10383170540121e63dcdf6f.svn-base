@@ -1,0 +1,11 @@
+package model.itemEntrada;
+
+import java.util.ArrayList;
+
+public abstract class ItemEntradaDAO {
+	public abstract void inserir(ItemEntradaVO itemEntrada) throws Exception;
+	public abstract void excluir(int id, String nome) throws Exception;
+	public abstract void alterar(ItemEntradaVO itemEntrada) throws Exception;
+	public abstract ArrayList<ItemEntradaVO> listar(String coluna, String organizarPor, String texto) throws Exception;
+
+}

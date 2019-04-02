@@ -1,0 +1,5 @@
+package model.subgrupo;
+
+public class SubgrupoDAOMysql extends SubgrupoDAO{
+
+}

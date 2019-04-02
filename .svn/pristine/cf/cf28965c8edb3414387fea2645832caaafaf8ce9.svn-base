@@ -1,0 +1,25 @@
+package model.erros;
+
+public class ObservadorAdministrador extends Observador{
+	private String nome, email;
+
+	public ObservadorAdministrador(String nome, String email) {
+		this.nome = nome;
+		this.email = email;
+	}
+
+	@Override
+	public void processarErro(ErroVO erro) {
+		System.out.println("Enviar email para o administrador"+erro.getInformacoes());
+		
+	}
+
+	public String getNome() {
+		return this.nome;
+	}
+
+	public String getEmail() {
+		return this.email;
+	}
+
+}

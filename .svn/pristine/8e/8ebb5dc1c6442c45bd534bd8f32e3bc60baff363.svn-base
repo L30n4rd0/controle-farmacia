@@ -1,0 +1,16 @@
+package model.erros;
+
+import model.fabricaDAOS.FabricaDAOS;
+
+public class ObservadorBanco extends Observador{
+
+	@Override
+	public void processarErro(ErroVO erro) throws Exception{
+		FabricaDAOS fabrica=FabricaDAOS.getFabricaDAOS();
+		
+		ErroDAO admErro=fabrica.criarErroDAO();
+			
+		admErro.inserir(erro);
+			
+	}
+}

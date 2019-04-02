@@ -1,0 +1,17 @@
+package cadastro;
+
+import javax.swing.JDesktopPane;
+
+import basicas.Usuario;
+
+public class PanelOdontologico extends DeskPanel_Material{
+
+	public PanelOdontologico(String grupoMaterial, Usuario nivelUsuario, int i) {
+		super(grupoMaterial, nivelUsuario, i);
+		// TODO Auto-generated constructor stub
+	}
+
+	
+	
+
+}

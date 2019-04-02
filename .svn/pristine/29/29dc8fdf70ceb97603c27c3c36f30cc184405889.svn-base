@@ -1,0 +1,58 @@
+package model.fabricaDAOS;
+
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+
+import javax.swing.JOptionPane;
+
+public abstract class FabricaDAOS {
+	static FabricaDAOS instancia=null;
+	
+	public FabricaDAOS getFabricaDAOS() {
+		if (instancia==null) {
+			
+			
+			
+		}
+		
+		return instancia;
+	}
+	
+	public boolean bancoTipoMysql() {
+		boolean retorno=true;
+		
+		
+		return retorno;
+	}
+	
+	private ArrayList<String> lerArquivoMapas(){
+		ArrayList<String> arrayMapas = new ArrayList <String>();
+		
+		try {
+			BufferedReader ler = new BufferedReader(new FileReader("aluno.html"));
+				
+			try {
+				
+				while(ler.ready()){
+					arrayMapas.add(ler.readLine());
+					
+				}
+				ler.close();
+				
+			} catch (IOException e) {
+				JOptionPane.showMessageDialog(null, "Erro na leitura do arquivo mapas!!\n"+e.getMessage());
+				e.printStackTrace();
+			}
+			
+		} catch (FileNotFoundException e1) {
+			JOptionPane.showMessageDialog(null, "Erro na leitura do arquivo mapas!!\n"+e1.getMessage());
+			e1.printStackTrace();
+		}
+		
+		return arrayMapas;
+	}
+
+}

@@ -1,0 +1,14 @@
+package ControleNegocios.interfaces;
+
+import java.sql.Date;
+import basicas.Usuario;
+
+public interface InterfaceControleEntrada {
+
+	public String verificarDados(String nota , String dataNota, String recebimento, 
+			String valorTotal, String nomeFornecedor, String observacoes, Usuario idUsuario);
+	public String salvar(String nota , String dataNota, String recebimento, 
+			String valorTotal, String nomeFornecedor, String observacoes, Usuario idUsuario);
+	public String salvarItens(String descricao, String unidade, String lote, Date validade, int quantPedida,
+			int quantEntregue, double precoUnitario, double total);
+}

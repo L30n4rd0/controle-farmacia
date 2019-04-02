@@ -1,0 +1,11 @@
+package model.usuario;
+
+import java.util.ArrayList;
+
+public abstract class UsuarioDAO {
+	public abstract void inserir(UsuarioVO usuario) throws Exception;
+	public abstract void excluir(int id, String nome) throws Exception;
+	public abstract void alterar(UsuarioVO usuario) throws Exception;
+	public abstract ArrayList<UsuarioVO> listar(String coluna, String organizarPor, String texto) throws Exception;
+
+}

@@ -1,0 +1,185 @@
+package ControleNegocios;
+
+import java.sql.Date;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableRowSorter;
+
+import basicas.Material;
+
+import ControleNegocios.interfaces.InterfaceControleMaterial;
+import admBanco.InterfaceBanco;
+import admBanco.DAOs.FornecedorDAO;
+import admBanco.DAOs.MaterialDAO;
+
+public class ControleMaterial implements InterfaceControleMaterial{
+
+	public String verificarDados(String descricao,
+			String apresentacao, String grupo, String subGrupo,
+			 String precoUnitario) {
+		
+		String resultado="";
+		
+		if (descricao.equals(""))
+			resultado+="Erro!!\nPor favor digite uma descri"+(char)231+""+(char)227+"o v"+(char)225+"lida para o "+grupo;
+		
+		else if (descricao.length()>45)
+			resultado+="Erro!!\nVoc"+(char)234+" excedeu limite de caracteres para a descri"+(char)231+""+(char)227+"o do "+grupo;
+		
+		if (apresentacao.equals("")){
+			if (resultado.equals("")) resultado="Erro!!";
+		
+			resultado+="\nPor favor digite uma apresenta"+(char)231+""+(char)227+"o v"+(char)225+"lida para o"+grupo;
+			
+		}else if (apresentacao.length()>45){
+			if (resultado.equals("")) resultado="Erro!!";
+			
+			resultado+="\nVoc"+(char)234+" excedeu limite de caracteres para a apresenta"+(char)231+""+(char)227+"o do "+grupo;
+		}
+		
+		try {
+			double teste=Double.parseDouble(precoUnitario);
+			
+		} catch (Exception e) {
+			if (resultado.equals("")) resultado="Erro!!";
+			
+			resultado+="\nPor favor digite um pre"+(char)231+"o v"+(char)225+"lido para o " +grupo;
+			
+		}
+		
+		return resultado;
+		
+	}
+
+	public String salvar(String descricao, String apresentacao,
+		String grupo, String subGrupo, String precoUnitario) {
+		
+		String resultado=verificarDados(descricao, apresentacao, grupo, subGrupo, precoUnitario);
+		InterfaceBanco admMaterial=new MaterialDAO();
+		
+		if (resultado.equals("")) {
+			
+			resultado=admMaterial.inserir(new Material(0, descricao, apresentacao, grupo, subGrupo, new Date(System.currentTimeMillis()), Double.parseDouble(precoUnitario)));
+		
+		}
+		return resultado;
+		
+	}
+
+	public JTable obterTabela(String dataIncial, String dataFinal, String psf, boolean consultarCadastrados, 
+			String pesquisarPor, String organizarPor, String textoPesquisa, String grupo) {
+		String[] colunas;
+		JTable tabela=null;
+		DefaultTableModel modelo=null;
+		
+		InterfaceBanco admMaterial=new MaterialDAO();
+		ArrayList<Object> objectTemp = admMaterial.listar(pesquisarPor, organizarPor, textoPesquisa);
+		System.out.println(objectTemp.size());
+		
+		if(consultarCadastrados){
+			colunas=new String[7];
+			colunas[0] = "ID";
+			colunas[1] = "Descri"+(char)231+""+(char)227+"o";
+			colunas[3] = "Grupo";
+			colunas[4] = "SubGrupo";
+			colunas[2] = "Apresenta"+(char)231+""+(char)227+"o";
+			colunas[5] = "Data do Cadastro";
+			colunas[6] = "Pre"+(char)231+"o Unit"+(char)225+"rio";
+			
+			
+			modelo = new DefaultTableModel(new Object[][]{}, colunas);
+			Material material;
+			for (int i = 0; i < objectTemp.size(); i++) {
+				material = (Material)objectTemp.get(i);
+				
+				if (grupo.equals(material.getGrupo())) {
+					
+					String linha[]= {""+material.getIdMaterial(),""+material.getDescricao(),""+material.getApresentacao(),
+							""+material.getGrupo(), ""+material.getSubGrupo(), ""+material.getDataCadastro(),""+material.getPrecoUnitario(),};
+					
+					modelo.addRow(linha);
+				}
+				
+			}
+			tabela = new JTable(modelo);
+			tabela.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+			
+			tabela.getColumnModel().getColumn(1).setPreferredWidth(230);
+			tabela.getColumnModel().getColumn(2).setPreferredWidth(190);
+			tabela.getColumnModel().getColumn(3).setPreferredWidth(100);
+			tabela.getColumnModel().getColumn(4).setPreferredWidth(100);
+			tabela.getColumnModel().getColumn(5).setPreferredWidth(130);
+			tabela.getColumnModel().getColumn(6).setPreferredWidth(100);
+		}
+		else{
+			colunas = new String[2];
+			colunas[0] = "Nome";
+			colunas[1] = "Quantidade";
+			
+			modelo = new DefaultTableModel(new Object[][]{}, colunas);
+			for (int i = 0; i < 4; i++) {
+				String teste[]={"testeNome","testeQuantidade"};
+				
+				modelo.addRow(teste);
+ 				
+			}
+			
+			tabela = new JTable(modelo);
+		}
+		tabela.setRowSorter(new TableRowSorter<DefaultTableModel>(modelo));
+		tabela.setFillsViewportHeight(true);
+		tabela.getTableHeader().setReorderingAllowed(false);//NAO PERMITE A REORDENACAO DAS COLUNAS
+		
+		return tabela;
+		
+	}
+	
+	
+	public Object buscar(String material) {
+		
+		Material resultado = new Material();
+		
+		InterfaceBanco admMaterial = new MaterialDAO();
+		resultado = (Material) admMaterial.buscar(material);
+		
+		return resultado;
+	}
+
+	public String excluir(int id, String descricao) {
+		String retorno="";
+		InterfaceBanco admMaterial=new MaterialDAO();
+		
+		retorno=admMaterial.excluir(id, descricao);
+		
+		return retorno;
+	}
+
+	public String alterar() {
+		return null;
+	}
+
+	@Override
+	public String[] listar(String nomeGrupo) {
+
+		ArrayList<Object> temp = new ArrayList<Object>();
+		Material material = new Material();
+		String[] listaMaterial;
+		
+		MaterialDAO admMaterial = new MaterialDAO();
+		temp = admMaterial.listar(nomeGrupo);
+		listaMaterial = new String[temp.size()];
+		
+		for (int i = 0; i < temp.size(); i++) {
+			material = (Material) temp.get(i);
+			listaMaterial[i] = material.getDescricao();
+		}
+		
+		return listaMaterial;
+	}
+
+}

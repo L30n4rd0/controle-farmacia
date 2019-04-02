@@ -1,0 +1,175 @@
+package ControleNegocios;
+
+import java.sql.Date;
+import java.util.ArrayList;
+
+import javax.swing.DefaultRowSorter;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableRowSorter;
+
+import basicas.Fornecedor;
+import basicas.Material;
+
+import ControleNegocios.interfaces.InterfaceControleFornecedor;
+import admBanco.InterfaceBanco;
+import admBanco.DAOs.FornecedorDAO;
+import admBanco.DAOs.MaterialDAO;
+
+public class ControleFornecedor implements InterfaceControleFornecedor{
+
+	public String verificarDados(String nome, String cidade, String cnpj, String inscricao) {
+		String resultado="";
+		if (nome.equals(""))
+			resultado+="Erro!!\nPor favor digite um nome v"+(char)225+"lido para o fornecedor.";
+		else if (nome.length()>45) 
+			resultado+="Erro!!\nVoc"+(char)234+" excedeu limite de caracteres para o nome do fornecedor.";
+		
+		
+		if (cidade.equals("")){
+			if (resultado.equals("")) resultado="Erro!!";
+		
+			resultado+="\nPor favor digite um nome v"+(char)225+"lido para a cidade.";
+			
+		}else if (cidade.length()>45){ 
+			if (resultado.equals("")) resultado="Erro!!";
+			
+			System.out.println(cidade.length());
+			resultado+="\nVoc"+(char)234+" excedeu limite de caracteres para a cidade do fornecedor.";
+		}
+		if (cnpj.contains("_")) {
+			if (resultado.equals("")) resultado="Erro!!";
+			
+			resultado+="\nPor favor digite um cnpj v"+(char)225+"lido.";
+		}
+		
+		if (inscricao.equals("")){
+			if (resultado.equals("")) resultado="Erro!!";
+			
+			resultado+="\nPor favor digite uma inscri"+(char)231+""+(char)227+"o v"+(char)225+"lida.";
+			
+		}else if (inscricao.length()>45){
+			if (resultado.equals("")) resultado="Erro!!";
+		
+			resultado+="\nVoc"+(char)234+" excedeu limite de caracteres para a inscri"+(char)231+""+(char)227+"o do fornecedor.";
+		}
+		return resultado;
+	}
+
+	public String salvar(String nome, String cidade, String uf, String cnpj, String inscricao) {
+		String resultado=verificarDados(nome, cidade, cnpj, inscricao);
+		
+		if (resultado.equals("")) {
+			InterfaceBanco admFornecedor=new FornecedorDAO();
+			resultado=admFornecedor.inserir(new Fornecedor(0, nome, cidade, uf, cnpj, inscricao, new Date(System.currentTimeMillis())));
+			
+		}
+		
+		return resultado;
+	}
+
+	public String excluir(int id, String nome) {
+		String retorno="";
+		InterfaceBanco admFornecedor=new FornecedorDAO();
+		
+		retorno=admFornecedor.excluir(id, nome);
+		
+		return retorno;
+	}
+
+	public JTable obterTabela(String pesquisarPor, String organizarPor, String textoPesquisa) {
+		String[] colunas=new String[7];
+		JTable tabela=null;
+		DefaultTableModel modelo=null;
+		
+		InterfaceBanco admFornecedor=new FornecedorDAO();
+		ArrayList<Object> objectTemp = admFornecedor.listar(pesquisarPor, organizarPor, textoPesquisa);
+		
+		colunas[0] = "ID";
+		colunas[1] = "Nome";
+		colunas[2] = "Cidade";
+		colunas[3] = "UF";
+		colunas[4] = "CNPJ";
+		colunas[5] = "Inscri"+(char)231+""+(char)227+"o";
+		colunas[6] = "Data Cadastro";
+		
+		modelo = new DefaultTableModel(new Object[][]{}, colunas);
+		
+		for (int i = 0; i < objectTemp.size(); i++) {
+			Fornecedor fornecedor = (Fornecedor)objectTemp.get(i);
+			
+			String linha[]= {""+fornecedor.getIdFornecedor(),
+							""+fornecedor.getNome(),
+							""+fornecedor.getCidade(),
+							""+fornecedor.getUf(),
+							""+fornecedor.getCnpj(),
+							""+fornecedor.getInscricao(),
+							""+fornecedor.getDataCadastro()};
+			
+			modelo.addRow(linha);
+		}
+		
+		tabela = new JTable(modelo);
+		tabela.setFillsViewportHeight(true);
+		tabela.setRowSorter(new TableRowSorter<DefaultTableModel>(modelo));
+//		tabela.getTableHeader().setReorderingAllowed(true);
+		tabela.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+		tabela.getTableHeader().setReorderingAllowed(false);//NAO PERMITE A REORDENACAO DAS COLUNAS
+		tabela.getColumnModel().getColumn(0).setPreferredWidth(50);
+		tabela.getColumnModel().getColumn(1).setPreferredWidth(230);
+		tabela.getColumnModel().getColumn(2).setPreferredWidth(190);
+		tabela.getColumnModel().getColumn(3).setPreferredWidth(30);
+		tabela.getColumnModel().getColumn(4).setPreferredWidth(170);
+		tabela.getColumnModel().getColumn(5).setPreferredWidth(120);
+		tabela.getColumnModel().getColumn(6).setPreferredWidth(110);
+		
+		return tabela;
+	}
+	
+
+	public String alterar(int id, String nome, String cidade, String uf, String cnpj, String inscricao) {
+		String resultado=verificarDados(nome, cidade, cnpj, inscricao);
+		
+		if (resultado.equals("")) {
+			InterfaceBanco admFornecedor=new FornecedorDAO();
+			resultado=admFornecedor.alterar(new Fornecedor(id, nome, cidade, uf, cnpj, inscricao, null));
+			
+		}
+		
+		return resultado;
+		
+	}
+
+	public Object buscar(String nomeFornecedor) {
+		
+		Fornecedor resultado = new Fornecedor();
+		
+		InterfaceBanco admFornecedor = new FornecedorDAO();
+		resultado = (Fornecedor) admFornecedor.buscar(nomeFornecedor);
+		
+		
+		return resultado;
+	}
+
+	@Override
+	public String[] listar(String nomePesquisa) {
+		
+		ArrayList<Object> temp = new ArrayList<Object>();
+		Fornecedor fornecedor = new Fornecedor();
+		String[] listaFornecedor;
+		
+		FornecedorDAO admFornecedor = new FornecedorDAO();
+		temp = admFornecedor.listar(nomePesquisa);
+		listaFornecedor = new String[temp.size()];
+		
+		for (int i = 0; i < temp.size(); i++) {
+			fornecedor = (Fornecedor) temp.get(i);
+			listaFornecedor[i] = fornecedor.getNome();
+		}
+		
+		return listaFornecedor;
+		
+	}
+	
+	
+}

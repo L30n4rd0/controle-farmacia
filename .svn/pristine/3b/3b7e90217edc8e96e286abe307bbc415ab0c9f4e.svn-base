@@ -1,0 +1,12 @@
+package model.fornecedor;
+
+import java.util.ArrayList;
+
+public abstract class FornecedorDAO {
+	
+	public abstract String inserir(FornecedorVO fornecedor);
+	public abstract String excluir(int id, String nome);
+	public abstract String alterar(FornecedorVO fornecedor);
+	public abstract ArrayList<FornecedorVO> listar(String coluna, String organizarPor, String texto);
+
+}

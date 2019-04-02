@@ -1,0 +1,62 @@
+package model.fabricaDAOS;
+
+import model.entrada.EntradaDAO;
+import model.entrada.EntradaDAOMysql;
+import model.fornecedor.FornecedorDAO;
+import model.fornecedor.FornecedorDAOMysql;
+import model.itemEntrada.ItemEntradaDAO;
+import model.itemEntrada.ItemEntradaDAOMysql;
+import model.material.MaterialDAO;
+import model.material.MaterialDAOMysql;
+import model.psf.PsfDAO;
+import model.psf.PsfDAOMysql;
+import model.saida.SaidaDAO;
+import model.saida.SaidaDAOMysql;
+import model.subgrupo.SubgrupoDAO;
+import model.subgrupo.SubgrupoDAOMysql;
+import model.usuario.UsuarioDAO;
+import model.usuario.UsuarioDAOMysql;
+
+public class FabricaDAOSMysql extends FabricaDAOS{
+
+	@Override
+	public EntradaDAO criarEntradaDAO() {
+		return new EntradaDAOMysql();
+	}
+
+	@Override
+	public FornecedorDAO criarFornecedorDAO() {
+		return new FornecedorDAOMysql();
+	}
+
+	@Override
+	public MaterialDAO criarMaterialDAO() {
+		return new MaterialDAOMysql();
+	}
+
+	@Override
+	public PsfDAO criarPsfDAO() {
+		return new PsfDAOMysql();
+	}
+
+	@Override
+	public SubgrupoDAO criarSubgrupoDAO() {
+		return new SubgrupoDAOMysql();
+	}
+
+	@Override
+	public UsuarioDAO criarUsuarioDAO() {
+		return new UsuarioDAOMysql();
+	}
+
+	@Override
+	public SaidaDAO criarSaidaDAO() {
+		return new SaidaDAOMysql();
+	}
+
+	@Override
+	public ItemEntradaDAO criarItemEntradaDAO() {
+		return new ItemEntradaDAOMysql();
+	}
+
+}

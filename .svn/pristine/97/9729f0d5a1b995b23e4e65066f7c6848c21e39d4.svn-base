@@ -1,0 +1,739 @@
+package cadastro;
+
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.beans.PropertyVetoException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JDesktopPane;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JProgressBar;
+import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.SwingWorker;
+import javax.swing.border.TitledBorder;
+import javax.swing.table.DefaultTableModel;
+
+import basicas.Usuario;
+
+import ControleNegocios.AutoCompletion;
+import ControleNegocios.ControleEntrada;
+import ControleNegocios.ControleFornecedor;
+import ControleNegocios.ControleMaterial;
+import ControleNegocios.ControlePostoDeSaude;
+import ControleNegocios.ControleSubgrupo;
+import ControleNegocios.JDateTextField;
+import ControleNegocios.interfaces.InterfaceControleEntrada;
+import ControleNegocios.interfaces.InterfaceControleFornecedor;
+import ControleNegocios.interfaces.InterfaceControleMaterial;
+import ControleNegocios.interfaces.InterfaceControlePosto;
+import ControleNegocios.interfaces.InterfaceControleSubgrupo;
+
+public class DeskPanel_Material extends JDesktopPane implements Runnable{
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private InterfaceControleSubgrupo controleSubgrupo;
+	private JLabel lblDescricao, lblApresentacao, lblSubgrupo, lblPrecoUnitario; 
+	private JLabel lblNotaFiscal, lblNumero, lblData, lblRecebimento, lblpsf_ou_fornecedor, lblObservacoes;
+	private JLabel lblTotal, valorTotal, lblItens;
+	private JButton btnSalvarRegistro, btnInserirItem, btnDeletar, btnSalvar;
+	private JTextField textField, textFieldPesquisa, textFieldDescricao, textFieldApresentecao;
+	private JTextField textFieldPrecoUnitario;
+	private JDateTextField textField_1, textField_2, textFieldDataInicioConsulta, textFieldDataFimConsulta;
+	private JComboBox<String> comboBox, comboBox_1, comboBoxPesquisa, comboBoxTipoConsulta;
+	private JScrollPane scrollPane, scrollPane_1, scrollPane_2;
+	private JTextArea textArea;
+	private JRadioButton rdbtnSemNotaFiscal, radioConsultaCadastrados;
+	private DefaultTableModel modelo;
+	private JProgressBar loading;
+	private JTable table_1, testeTable;
+	private String grupo;
+	protected Usuario nivel;
+	private InserirItens inserirItem;
+	private boolean controle = true;
+	private Thread habilitar;
+	
+	public DeskPanel_Material(String grupoMaterial, Usuario nivelUsuario, int i) {
+		
+		this.setBorder(new TitledBorder(null, "", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		this.setBounds(10, 69, 774, 488); // RECENTE
+		this.setLayout(null);
+		
+		habilitar = new Thread(this);
+		habilitar.start();
+		
+		controleSubgrupo=new ControleSubgrupo();
+		nivel = new Usuario();
+		grupo = grupoMaterial;
+		nivel = nivelUsuario;
+		
+		if (i == 1) this.desenhar_Panel_Movimento("Entrada", "Fornecedor", 381);
+		else if (i == 2)this.desenhar_Panel_Movimento("Sa"+(char)237+"da", "PSF", 422);
+		else /*if (i == 3)*/this.desenhar_Panel_Cadastro();
+		//else desenhar_Panel_Consulta();
+	}
+	
+	/*private void desenhar_Panel_Consulta(){ // VAI FICAR NAS ESPECIALIZACOES
+		
+		lblDe = new JLabel("De:");
+		lblDe.setFont(new Font("SansSerif", Font.PLAIN, 14));
+		lblDe.setBounds(25, 20, 28, 19);
+		this.add(lblDe);
+		
+		textFieldDataInicioConsulta = new JDateTextField();
+		textFieldDataInicioConsulta.setBounds(59, 16, 122, 28);
+		this.add(textFieldDataInicioConsulta);
+		textFieldDataInicioConsulta.setColumns(10);
+
+		lblAt = new JLabel("At"+(char)233+":");
+		lblAt.setFont(new Font("SansSerif", Font.PLAIN, 14));
+		lblAt.setBounds(22, 57, 31, 19);
+		this.add(lblAt);
+		
+		textFieldDataFimConsulta = new JDateTextField();
+		textFieldDataFimConsulta.setBounds(59, 51, 122, 28);
+		this.add(textFieldDataFimConsulta);
+		textFieldDataFimConsulta.setColumns(10);
+		
+		lblPostoDeSade = new JLabel("PSF:");
+		lblPostoDeSade.setFont(new Font("SansSerif", Font.PLAIN, 14));
+		lblPostoDeSade.setBounds(347, 22, 37, 19);
+		this.add(lblPostoDeSade);
+		
+		comboBoxTipoConsulta = new JComboBox<String>(carregarListaPSF("nome"));
+		comboBoxTipoConsulta.setBounds(390, 20, 366, 26);
+		this.add(comboBoxTipoConsulta);
+		AutoCompletion.enable(comboBoxTipoConsulta);
+		
+		radioConsultaCadastrados = new JRadioButton("Consulta de Materiais Cadastrados");
+		radioConsultaCadastrados.setBounds(400, 60, 223, 18);
+		radioConsultaCadastrados.setSelected(false);
+		
+		lblPesquisarPor = new JLabel("Pesquisar por");
+		lblPesquisarPor.setBounds(12, 20, 87, 20);
+		this.add(lblPesquisarPor);
+		lblPesquisarPor.setVisible(false);
+		
+		textFieldPesquisa = new JTextField();
+		textFieldPesquisa.setBounds(248, 17, 296, 27);
+		textFieldPesquisa.setText("");
+		textFieldPesquisa.addKeyListener(new KeyListener() {
+			public void keyTyped(KeyEvent e) {}
+			
+			public void keyReleased(KeyEvent e) {
+				atualizarTabela();
+				
+			}
+			public void keyPressed(KeyEvent e) {}
+		});
+		this.add(textFieldPesquisa);
+		textFieldPesquisa.setColumns(10);
+		textFieldPesquisa.setVisible(false);
+		
+		btnDeletar = new JButton("Deletar");
+		btnDeletar.setBounds(556, 17, 100, 27);
+		btnDeletar.addActionListener(new ActionListener() {
+			
+			public void actionPerformed(ActionEvent e) {
+				if (testeTable.getSelectedRow()==-1) {
+					JOptionPane.showMessageDialog(null, "Por favor selecione uma linha.");
+					
+				}else {
+					InterfaceControleMaterial controleMaterial=new ControleMaterial();
+					
+					String resultado=controleMaterial.excluir(Integer.parseInt(testeTable.getValueAt(testeTable.getSelectedRow(), 0).toString()), testeTable.getValueAt(testeTable.getSelectedRow(), 1).toString());
+					
+					if (resultado.substring(0, 4).equals("Erro")) {
+						JOptionPane.showMessageDialog(null, resultado, "Erro", JOptionPane.ERROR_MESSAGE);
+						
+					}else {
+						JOptionPane.showMessageDialog(null, resultado, "Informa"+(char)231+""+(char)227+"o", JOptionPane.INFORMATION_MESSAGE);
+					}
+					
+					atualizarTabela();
+				}
+			}
+		});
+		this.add(btnDeletar);
+		btnDeletar.setVisible(false);
+		
+		btnEditar = new JButton("Editar");
+		btnEditar.setBounds(668, 17, 100, 27);
+		this.add(btnEditar);
+		btnEditar.setVisible(false);
+		
+		comboBoxPesquisa = new JComboBox();
+		comboBoxPesquisa.setBounds(111, 18, 137, 25);
+		comboBoxPesquisa.addItem("Descri"+(char)231+""+(char)227+"o");
+		comboBoxPesquisa.addItem("ID");
+		comboBoxPesquisa.addItem("Apresenta"+(char)231+""+(char)227+"o");
+		comboBoxPesquisa.addItem("Grupo");
+		comboBoxPesquisa.addItem("Subgrupo");
+		comboBoxPesquisa.addItem("Data de Cadastro");
+		comboBoxPesquisa.addItem("Pre"+(char)231+"o unit"+(char)225+"rio");
+		this.add(comboBoxPesquisa);
+		comboBoxPesquisa.setVisible(false);
+		
+		btnConsultar = new JButton("Consultar");
+		btnConsultar.setBounds(666, 55, 90, 28);
+		
+		btnConsultar.addActionListener(new ActionListener() {
+			
+			public void actionPerformed(ActionEvent arg0) {
+				//txtTeste.setText(testeTable.getValueAt(testeTable.getSelectedRow(), 0).toString());
+//				atualizarTabela();
+				
+			}
+		});
+		this.add(btnConsultar);
+		
+		radioConsultaCadastrados.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				
+				if(radioConsultaCadastrados.isSelected()){
+					
+					lblDe.setVisible(false);
+					textFieldDataInicioConsulta.setVisible(false);
+					lblAt.setVisible(false);
+					textFieldDataFimConsulta.setVisible(false);
+					lblPostoDeSade.setVisible(false);
+					comboBoxTipoConsulta.setVisible(false);
+					btnConsultar.setVisible(false);
+					
+					lblPesquisarPor.setVisible(true);
+					textFieldPesquisa.setVisible(true);
+					btnDeletar.setVisible(true);
+					btnEditar.setVisible(true);
+					comboBoxPesquisa.setVisible(true);
+					
+					atualizarTabela();
+//					panel.repaint();
+					
+				}else{
+					
+					lblDe.setVisible(true);
+					textFieldDataInicioConsulta.setVisible(true);
+					lblAt.setVisible(true);
+					textFieldDataFimConsulta.setVisible(true);
+					lblPostoDeSade.setVisible(true);
+					comboBoxTipoConsulta.setVisible(true);
+					btnConsultar.setVisible(true);
+					
+					lblPesquisarPor.setVisible(false);
+					textFieldPesquisa.setVisible(false);
+					btnDeletar.setVisible(false);
+					btnEditar.setVisible(false);
+					comboBoxPesquisa.setVisible(false);
+					
+					atualizarTabela();
+//					panel.repaint();
+				}
+			}
+		});
+		this.add(radioConsultaCadastrados);
+		
+		
+		this.repaint();
+		atualizarTabela();
+		
+	}*/
+	
+	private void desenhar_Panel_Cadastro(){
+		
+		//this.removeAll();
+		
+		lblDescricao = new JLabel("Descri"+(char)231+""+(char)227+"o");
+		lblDescricao.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		lblDescricao.setBounds(239, 84, 100, 20);
+		this.add(lblDescricao);
+		
+		textFieldDescricao = new JTextField();
+		textFieldDescricao.setBounds(327, 81, 189, 28);
+		this.add(textFieldDescricao);
+		textFieldDescricao.setColumns(10);
+		
+		lblApresentacao = new JLabel("Apresenta"+(char)231+""+(char)227+"o");
+		lblApresentacao.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		lblApresentacao.setBounds(212, 120, 101, 20);
+		this.add(lblApresentacao);
+		
+		textFieldApresentecao = new JTextField();
+		textFieldApresentecao.setBounds(327, 117, 187, 28);
+		this.add(textFieldApresentecao);
+		textFieldApresentecao.setColumns(10);
+		
+		lblSubgrupo = new JLabel("Subgrupo");
+		lblSubgrupo.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		lblSubgrupo.setBounds(238, 160, 75, 20);
+		this.add(lblSubgrupo);
+		
+		comboBox = new JComboBox<String>(controleSubgrupo.listar(""));
+		comboBox.setBounds(327, 158, 187, 26);
+		AutoCompletion.enable(comboBox);
+		this.add(comboBox);
+		
+		lblPrecoUnitario = new JLabel("Pre"+(char)231+"o Unit"+(char)225+"rio");
+		lblPrecoUnitario.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		lblPrecoUnitario.setBounds(207, 201, 106, 20);
+		this.add(lblPrecoUnitario);
+		
+		textFieldPrecoUnitario = new JTextField();
+		textFieldPrecoUnitario.setBounds(327, 196, 138, 28);
+		this.add(textFieldPrecoUnitario);
+		textFieldPrecoUnitario.setColumns(10);
+		
+		btnSalvar = new JButton("Salvar");
+		btnSalvar.setBounds(416, 300, 100, 28);
+		this.add(btnSalvar);
+		
+		btnSalvar.addActionListener(new ActionListener() {
+			
+			public void actionPerformed(ActionEvent arg0) {
+				
+				InterfaceControleMaterial controleMaterial=new ControleMaterial();
+				
+				String resultado = controleMaterial.salvar(textFieldDescricao.getText(), textFieldApresentecao.getText(),
+						getGrupo(), (String)comboBox.getSelectedItem(), textFieldPrecoUnitario.getText().replace(",", "."));
+				
+				if (resultado.substring(0, 4).equals("Erro")) {
+					
+					JOptionPane.showMessageDialog(null, resultado, "Aten"+(char)231+""+(char)227+"o", JOptionPane.ERROR_MESSAGE);
+				}else {
+					JOptionPane.showMessageDialog(null, resultado, "Informa"+(char)231+""+(char)227+"o", JOptionPane.INFORMATION_MESSAGE);
+				}
+			}
+		});
+		
+		//this.repaint();
+		
+	}
+	
+	private void desenhar_Panel_Movimento(String tipo, String tipoCampo, int n){ // psf: n = 422 fornecedor: n = 381
+		
+		//setTitle("Registrar "+tipo+" de "+grupo);
+		
+		//this.removeAll();
+
+		lblNotaFiscal = new JLabel("Nota Fiscal");
+		lblNotaFiscal.setFont(new Font("Tahoma", Font.BOLD, 16));
+		lblNotaFiscal.setBounds(52, 6, 101, 30);
+		this.add(lblNotaFiscal);
+		
+		lblNumero = new JLabel("N"+(char)250+"mero");
+		lblNumero.setBounds(71, 55, 51, 14);
+		this.add(lblNumero);
+		
+		textField = new JTextField();
+		textField.setBounds(127, 48, 122, 28);
+		this.add(textField);
+		textField.setColumns(10);
+		
+		lblData = new JLabel("Data");
+		lblData.setBounds(91, 93, 31, 16);
+		this.add(lblData);
+		
+		textField_1 = new JDateTextField();
+		textField_1.setBounds(127, 87, 122, 28);
+		this.add(textField_1);
+		textField_1.setColumns(10);
+		
+		lblRecebimento = new JLabel("Recebimento");
+		lblRecebimento.setBounds(43, 133, 80, 16);
+		this.add(lblRecebimento);
+		
+		textField_2 = new JDateTextField();
+		textField_2.setBounds(127, 126, 122, 28);
+		this.add(textField_2);
+		textField_2.setColumns(10);
+		
+		lblpsf_ou_fornecedor = new JLabel(tipoCampo);
+		lblpsf_ou_fornecedor.setBounds(n, 50, 72, 16);
+		this.add(lblpsf_ou_fornecedor);
+		
+		if(tipo.equals("Entrada"))comboBox_1 = new JComboBox<String>(carregarListaFornecedor("nome"));
+		else comboBox_1 = new JComboBox<String>(carregarListaPSF("nome"));
+		comboBox_1.setBounds(457, 45, 298, 28);
+		this.add(comboBox_1);
+		AutoCompletion.enable(comboBox_1);
+		
+		lblObservacoes = new JLabel("Observa"+(char)231+""+(char)245+"es");
+		lblObservacoes.setBounds(373, 89, 80, 16);
+		this.add(lblObservacoes);
+		
+		scrollPane_1 = new JScrollPane();
+		scrollPane_1.setBounds(457, 89, 298, 99);
+		this.add(scrollPane_1);
+		
+		textArea = new JTextArea();
+		textArea.setLineWrap(true);
+		scrollPane_1.setViewportView(textArea);
+		
+		rdbtnSemNotaFiscal = new JRadioButton("Desabilitar Nota Fiscal");
+		rdbtnSemNotaFiscal.setBounds(165, 13, 153, 18);
+		rdbtnSemNotaFiscal.addActionListener(new ActionListener() {
+			
+			public void actionPerformed(ActionEvent arg0) {
+				
+				if(rdbtnSemNotaFiscal.isSelected()){
+					textField.setEnabled(false);
+					textField_1.setEnabled(false);
+					lblTotal.setEnabled(false);
+					valorTotal.setEnabled(false);
+					valorTotal.setForeground(Color.GRAY);
+				}
+				else{
+					textField.setEnabled(true);
+					textField_1.setEnabled(true);
+					lblTotal.setEnabled(true);
+					valorTotal.setEnabled(true);
+					valorTotal.setForeground(Color.RED);
+				}
+				
+			}
+		});
+		this.add(rdbtnSemNotaFiscal);
+		
+		lblItens = new JLabel("Itens");
+		lblItens.setFont(new Font("Tahoma", Font.BOLD, 16));
+		lblItens.setBounds(51, 211, 51, 26);
+		this.add(lblItens);
+		
+		scrollPane_2 = new JScrollPane();
+		scrollPane_2.setBounds(25, 249, 729, 220);
+		this.add(scrollPane_2);
+		
+		construirTabelaDeRegistro();
+		
+		btnSalvarRegistro = new JButton("Salvar");
+		btnSalvarRegistro.setBounds(460, 211, 90, 28);
+		btnSalvarRegistro.addActionListener(new ActionListener() {
+			
+			public void actionPerformed(ActionEvent arg0) {
+				
+				loading = new JProgressBar();
+				loading.setStringPainted(true);
+				loading.setValue(0);
+				loading.setString("0%");
+				loading.setMaximum(table_1.getRowCount());
+				loading.setBounds(250, 210, 200, 30);
+				DeskPanel_Material.this.add(loading);
+				
+				@SuppressWarnings("rawtypes")
+				final SwingWorker w = new SwingWorker() { 
+				
+					protected Object doInBackground() throws Exception {  
+						
+						InterfaceControleEntrada form = new ControleEntrada();
+						DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+						String resultado = "";
+						
+						try {
+							
+							if(textField_1.isValidDate(textField_1.getText())==false || textField_2.isValidDate(textField_2.getText())==false){
+								JOptionPane.showMessageDialog(null, "Data inv"+(char)225+"lida ou ano n"+(char)227+"o registrado.");
+								//desenharPanel("Entrada", "Fornecedor", 381);
+							}
+							else{
+								form.salvar(textField.getText(), textField_1.getText(), 
+										textField_2.getText(), valorTotal.getText().replace(",", "."), (String)comboBox_1.getSelectedItem(), textArea.getText(), nivel);
+								
+							}
+							for (int i = 0; i < table_1.getRowCount(); i++) {
+								
+									
+									loading.setValue(i+1);
+									loading.setString(((i+1)*100/table_1.getRowCount()) + "%");
+									
+									resultado = form.salvarItens(table_1.getValueAt(i, 1).toString(), table_1.getValueAt(i, 2).toString(), table_1.getValueAt(i, 3).toString(),
+									new java.sql.Date((formatter.parse(table_1.getValueAt(i, 4).toString())).getTime()),
+									new Integer(table_1.getValueAt(i, 5).toString()), new Integer(table_1.getValueAt(i, 6).toString()),
+									new Double(table_1.getValueAt(i, 7).toString().replace(",", ".")), new Double(table_1.getValueAt(i, 8).toString()));
+						
+								
+							}
+							if(table_1.getRowCount()>0) JOptionPane.showMessageDialog(null, resultado+"\nItens registrados: "+table_1.getRowCount());
+							
+							//desenharPanel("Entrada", "Fornecedor", 381);
+								
+						} catch (NumberFormatException e) {	
+							e.printStackTrace();
+							JOptionPane.showMessageDialog(null, "Excess"+(char)227+"o: Formato de n"+(char)250+"meros errado!");
+						} catch (ParseException e) {
+							e.printStackTrace();
+						}
+						return 0;
+					}
+				};
+				
+				w.execute();
+			}
+		});
+		this.add(btnSalvarRegistro);
+		
+		btnInserirItem = new JButton("Inserir");
+		btnInserirItem.setBounds(562, 211, 90, 28);
+		
+		
+		btnInserirItem.addActionListener(new ActionListener() {
+			
+			public void actionPerformed(ActionEvent arg0) {
+				
+				
+				try {
+					inserirItem = new InserirItens(DeskPanel_Material.this);
+					inserirItem.setSelected(true);
+				} catch (PropertyVetoException e) {e.printStackTrace();}
+				DeskPanel_Material.this.add(inserirItem);
+				inserirItem.moveToFront();
+				
+				
+				
+			}
+		});
+		this.add(btnInserirItem);
+		
+		btnDeletar = new JButton("Deletar");
+		btnDeletar.setBounds(664, 211, 90, 28);
+		btnDeletar.addActionListener(new ActionListener() {
+			
+			public void actionPerformed(ActionEvent arg0) {
+				
+				if(table_1.getSelectedRow() == -1){
+					JOptionPane.showMessageDialog(null, "Por favor selecione uma linha.");
+				}
+				else{
+					modelo.removeRow(table_1.getSelectedRow());
+					if(table_1.getRowCount() > table_1.getSelectedRow()){
+						
+						for (int i = table_1.getSelectedRow()+1; i < table_1.getRowCount(); i++) {
+							table_1.setValueAt(i+1, i, 0);
+						}
+					}
+					
+					valorTotal.setText(""+atualizarValorTotal(rdbtnSemNotaFiscal.isSelected()));
+					
+					DeskPanel_Material.this.repaint();
+					scrollPane_2.repaint();
+				}
+				
+			}
+		});
+		this.add(btnDeletar);
+		
+		lblTotal = new JLabel("Total:");
+		lblTotal.setFont(new Font("SansSerif", Font.BOLD, 14));
+		lblTotal.setBounds(80, 172, 39, 16);
+		this.add(lblTotal);
+		
+		valorTotal = new JLabel("0");
+		valorTotal.setFont(new Font("SansSerif", Font.BOLD, 16));
+		valorTotal.setForeground(Color.RED);
+		valorTotal.setBounds(127, 172, 100, 16);
+		this.add(valorTotal);
+		
+		//this.repaint();
+	
+	}
+	
+	private void construirTabelaDeRegistro(){
+		
+		String colunas[];
+		modelo=null;
+		colunas = new String[9];
+		
+		colunas[0] = "Item";
+		colunas[1] = "Descri"+(char)231+""+(char)227+"o";
+		colunas[2] = "Unidade";
+		colunas[3] = "Lote";
+		colunas[4] = "Validade";
+		colunas[5] = "Qtd. Pedida";
+		colunas[6] = "Qtd. Entregue";
+		colunas[7] = "P. Unit"+(char)225+"rio";
+		colunas[8] = "Total";
+		
+		modelo = new DefaultTableModel(new Object[][]{}, colunas);
+			
+		table_1 = new JTable(modelo);
+		table_1.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+		table_1.getColumnModel().getColumn(0).setPreferredWidth(50);
+		table_1.getColumnModel().getColumn(1).setPreferredWidth(200);
+		table_1.getColumnModel().getColumn(2).setPreferredWidth(100);
+		table_1.getColumnModel().getColumn(6).setPreferredWidth(90);
+		table_1.setFillsViewportHeight(true);
+		table_1.getTableHeader().setReorderingAllowed(false);
+		scrollPane_2.setViewportView(table_1);
+		
+		
+	}
+
+
+	public void atualizarTabela(String[] dados){
+			
+		
+		
+		modelo.addRow(dados);
+		
+		atualizarValorTotal(rdbtnSemNotaFiscal.isSelected());
+		valorTotal.setText(String.format("%.2f", atualizarValorTotal(rdbtnSemNotaFiscal.isSelected())));
+		scrollPane_2.repaint();
+		this.remove(inserirItem);
+		this.repaint();
+		//inserirItem = new InserirItens(this);
+		
+	}
+	
+	private double atualizarValorTotal(boolean tipo){
+		
+		double total = 0.0;
+		
+		if(tipo == false){
+			for (int i = 0; i < table_1.getRowCount(); i++) {
+				String temp = (String) table_1.getValueAt(i, 8);
+				total += Double.parseDouble(temp);
+			}
+		}
+		return total;
+	}
+	
+	private String[] carregarListaFornecedor(String nomePesquisa){
+		
+		InterfaceControleFornecedor admFornecedor = new ControleFornecedor();
+		return admFornecedor.listar(nomePesquisa);
+
+	}
+	
+	private String[] carregarListaPSF(String nomePesquisa){
+		InterfaceControlePosto admPSF = new ControlePostoDeSaude();
+		return admPSF.listar(nomePesquisa);
+	}
+
+	public void atualizarTabela() {
+		InterfaceControleMaterial controleMaterial = new ControleMaterial();
+		String itemSelectadoCombo = null;
+		
+		if (comboBoxPesquisa.getSelectedItem().equals("Descri"+(char)231+""+(char)227+"o"))
+			itemSelectadoCombo="descricao";
+			
+		else if (comboBoxPesquisa.getSelectedItem().equals("ID"))
+			itemSelectadoCombo="idMaterial";
+		
+		else if (comboBoxPesquisa.getSelectedItem().equals("Apresenta"+(char)231+""+(char)227+"o"))
+			itemSelectadoCombo="apresentacao";
+		
+		else if (comboBoxPesquisa.getSelectedItem().equals("Grupo"))
+			itemSelectadoCombo="grupo";
+		
+		else if (comboBoxPesquisa.getSelectedItem().equals("Subgrupo"))
+			itemSelectadoCombo="subgrupo";
+		
+		
+		else if (comboBoxPesquisa.getSelectedItem().equals("Data de Cadastro"))
+			itemSelectadoCombo="dataCadastro";
+		
+		else if (comboBoxPesquisa.getSelectedItem().equals("Pre"+(char)231+"o unit"+(char)225+"rio"))
+			itemSelectadoCombo="precoUnitario";
+		
+		try {
+			this.remove(scrollPane);
+			
+		} catch (Exception e) {}
+		
+//		if((textFieldDataInicioConsulta.isEmptyDate()|| textFieldDataInicioConsulta.isValidDate(textFieldDataInicioConsulta.getText())==false)
+//				|| textFieldDataFimConsulta.isEmptyDate() || textFieldDataFimConsulta.isValidDate(textFieldDataFimConsulta.getText())==false){	
+			testeTable=controleMaterial.obterTabela(textFieldDataInicioConsulta.getText(),textFieldDataFimConsulta.getText(), (String)comboBoxTipoConsulta.getSelectedItem(),
+					radioConsultaCadastrados.isSelected(), 
+					itemSelectadoCombo,"grupo", textFieldPesquisa.getText(), grupo);
+		
+//		System.out.println(testeTable.getValueAt(1, 2));
+		
+		scrollPane = new JScrollPane(testeTable);
+		
+		scrollPane.setBounds(20, 100, 736, 315);
+		this.add(scrollPane);
+		
+		scrollPane.repaint();
+		this.repaint();
+//		}
+		
+
+	}
+	
+	@SuppressWarnings("deprecation")
+	@Override
+	public void run() {
+		
+		while(true){
+			
+			if((table_1!=null) && (textField!=null) && (textField_1!=null) && (textField_2!=null)){
+				if((table_1.getRowCount() == 0) || (textField.getText().equals("")|| textField_1.getText().equals("")
+						|| textField_2.getText().equals(""))){
+					btnSalvarRegistro.setEnabled(false);
+				}
+				else btnSalvarRegistro.setEnabled(true);
+			}
+			if(controle == false){
+				break;
+			}
+			
+			try {
+				Thread.sleep(200);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		}
+		
+		habilitar.stop();
+		habilitar.destroy();
+		habilitar = null;
+		
+	}
+	
+	public JTable getTable_1() {
+		return table_1;
+	}
+
+	public void setTable_1(JTable table_1) {
+		this.table_1 = table_1;
+	}
+
+	public String getGrupo() {
+		return grupo;
+	}
+
+	public void setGrupo(String grupo) {
+		this.grupo = grupo;
+	}
+
+	public Thread getHabilitar() {
+		return habilitar;
+	}
+
+	public void setHabilitar(Thread habilitar) {
+		this.habilitar = habilitar;
+	}
+
+	public boolean isControle() {
+		return controle;
+	}
+
+	public void setControle(boolean controle) {
+		this.controle = controle;
+	}
+	
+
+}

@@ -1,0 +1,10 @@
+package model.erros;
+
+public abstract class Observador
+{   
+    /**
+     * FUNCAO USADA PARA NOTIFICAR ESSA CLASSE QUE A CLASSE QUE ELA OBSERVA MUDOU
+     * @throws Exception 
+     */
+    public abstract void processarErro(ErroVO erro) throws Exception;
+}

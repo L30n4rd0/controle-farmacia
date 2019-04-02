@@ -1,0 +1,15 @@
+package ControleNegocios.interfaces;
+
+import javax.swing.JTable;
+
+import basicas.Usuario;
+
+public interface InterfaceControleUsuario {
+	public String verificarDados(String nome, String login, String senha, String confirmarSenha);
+	public String salvar(String nome, String login, String senha, String confirmarSenha, String nivel);
+	public String excluir(int id, String nome);
+	public String alterar(int id, String nome, String login, String senha, String confirmarSenha, String nivel);
+	public JTable obterTabela(String pesquisarPor, String organizarPor, String textoPesquisa);
+	public Usuario buscar(int id);
+
+}

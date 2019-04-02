@@ -1,0 +1,72 @@
+package model.erros;
+
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.sql.Date;
+
+public class ExcecaoSujeito extends Exception{
+	private static final long serialVersionUID = 1L;
+	private String mensagemUsuario;
+	private Exception exception;
+	private static ArrayList<Observador> observadoresDessaClasse = new ArrayList<Observador>();
+	
+	public ExcecaoSujeito(String mensagemUsuario, Exception exception) {
+		this.mensagemUsuario=mensagemUsuario;
+		this.exception=exception;
+		
+	}
+	
+	public String getMessage(){
+		
+		String informacoesErro;
+		int codigoErro;
+		informacoesErro=this.mensagemUsuario;
+		
+		if (this.exception instanceof SQLException) {
+			SQLException sqlException=(SQLException)exception;
+			
+			codigoErro=sqlException.getErrorCode();
+			informacoesErro+="\nLocalizedMessage: "+sqlException.getLocalizedMessage()+
+					"\nSQLExceptionMessage:"+sqlException.getMessage()+
+					"\nSQLState: "+sqlException.getSQLState()+
+					"\nCause: "+sqlException.getCause()+
+					"\nClass: "+sqlException.getClass()+
+					"\nNextException: "+sqlException.getNextException()+
+					"\nStackTrace: "+sqlException.getStackTrace()+
+					"\nSuppressed: "+sqlException.getSuppressed();
+			
+		}else {
+			codigoErro=0;
+			informacoesErro+="\nLocalizedMessage: "+this.exception.getLocalizedMessage()+
+					"\nSQLExceptionMessage:"+this.exception.getMessage()+
+					"\nCause: "+this.exception.getCause()+
+					"\nClass: "+this.exception.getClass()+
+					"\nStackTrace: "+this.exception.getStackTrace()+
+					"\nSuppressed: "+this.exception.getSuppressed();
+		}
+		
+		try {
+			notificarObservadores(new ErroVO(0, codigoErro, new Date(System.currentTimeMillis()), informacoesErro));
+		} catch (Exception e) {
+			this.mensagemUsuario+="\n"+e.getMessage();
+			
+		}
+		
+		return this.mensagemUsuario+"\nUma mensagem com mais detalhes sobre o erro ser"+(char)225+" enviada para o administrador do sistema!";
+		
+	}
+	
+	public static void adicionarObservador(Observador observador) {
+		observadoresDessaClasse.add(observador);
+	}
+
+	public static void removerObservador(Observador observador) {
+		observadoresDessaClasse.remove(observador);
+	}
+
+	public void notificarObservadores(ErroVO erro) throws Exception {
+		for (Observador observador : observadoresDessaClasse) {
+			observador.processarErro(erro);
+		}
+	}
+}

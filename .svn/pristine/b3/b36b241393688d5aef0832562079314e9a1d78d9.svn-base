@@ -1,0 +1,11 @@
+package model.erros;
+
+import java.util.ArrayList;
+
+public abstract class ErroDAO {
+	public abstract void inserir(ArrayList<ErroVO> erros) throws Exception;
+	public abstract void excluir(int id) throws Exception;
+	public abstract void alterar(ErroVO erro) throws Exception;
+	public abstract ArrayList<ErroVO> listar(String coluna, String organizarPor, String texto) throws Exception;
+
+}

@@ -1,0 +1,35 @@
+package model;
+
+import javax.swing.JOptionPane;
+
+import model.erros.ExcecaoSujeito;
+import model.erros.ObservadorAdministrador;
+import model.erros.ObservadorBanco;
+import model.fabricaDAOS.FabricaDAOS;
+import model.fornecedor.FornecedorDAO;
+import model.fornecedor.FornecedorVO;
+
+public class Aplicacao {
+	public static void main(String[] args) {
+		
+		try {
+			FabricaDAOS fabrica=FabricaDAOS.getFabricaDAOS();
+			
+			FornecedorDAO admFornecedor=fabrica.criarFornecedorDAO();
+			
+			ExcecaoSujeito.adicionarObservador(new ObservadorAdministrador("Leonardo", "leonardo@souza.com"));
+			ExcecaoSujeito.adicionarObservador(new ObservadorBanco());
+			
+			FornecedorVO fornecedor=new FornecedorVO(0, "Leonardo", "serra talhada", "pe", "dfsdfdsf345435", "3432435345", null);
+			
+//			admFornecedor.excluir(23, "teste");
+			admFornecedor.inserir(fornecedor);
+			
+			JOptionPane.showMessageDialog(null, "Dados cadastrados com sucesso. Cadastro do fornecedor: "+ fornecedor.getNome());
+			
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, e.getMessage());
+		}
+	}
+
+}

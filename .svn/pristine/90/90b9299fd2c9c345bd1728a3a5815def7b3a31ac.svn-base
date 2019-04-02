@@ -1,0 +1,24 @@
+package cadastro;
+
+import java.awt.Font;
+
+import javax.swing.JComboBox;
+import javax.swing.JDesktopPane;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
+
+import ControleNegocios.ControleMaterial;
+import basicas.Usuario;
+
+public class PanelPenso extends DeskPanel_Material{
+
+	
+	public PanelPenso(String grupoMaterial, Usuario nivelUsuario, int i) {
+		super(grupoMaterial, nivelUsuario, i);
+		// TODO Auto-generated constructor stub
+	}
+
+	
+
+}

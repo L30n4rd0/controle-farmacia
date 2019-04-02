@@ -1,0 +1,5 @@
+package model.entrada;
+
+public class EntradaDAOMysql extends EntradaDAO{
+
+}

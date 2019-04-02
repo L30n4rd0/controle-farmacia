@@ -1,0 +1,70 @@
+package model.fabricaDAOS;
+
+import java.io.File;
+import java.util.ArrayList;
+
+import model.AdmArquivos;
+import model.entrada.EntradaDAO;
+import model.erros.ErroDAO;
+import model.fornecedor.FornecedorDAO;
+import model.itemEntrada.ItemEntradaDAO;
+import model.material.MaterialDAO;
+import model.psf.PsfDAO;
+import model.saida.SaidaDAO;
+import model.subgrupo.SubgrupoDAO;
+import model.usuario.UsuarioDAO;
+
+public abstract class FabricaDAOS {
+	static FabricaDAOS instancia=null;
+	
+	public static synchronized FabricaDAOS getFabricaDAOS() throws Exception {
+		if (instancia==null) {
+			
+			if (bancoTipoMysql())
+				instancia=new FabricaDAOSMysql();
+			else
+				instancia=new FabricaDAOSOracle();
+			
+		}
+		
+		return instancia;
+	}
+	
+	private static boolean bancoTipoMysql() throws Exception {
+		boolean retorno=true;
+		
+		if (!new File("config.txt").exists()) {
+			ArrayList<String>conteudoArq=new ArrayList<String>();
+			
+			conteudoArq.add("Arquivo de configuracao");
+			conteudoArq.add("tipoBanco:mysql");
+			
+			AdmArquivos.salvarArquivo(conteudoArq, "config.txt");
+		}
+		
+		ArrayList<String>conteudoArq=AdmArquivos.lerArquivo("config.txt");
+		
+		for (String string : conteudoArq) {
+			if (string.contains("tipoBanco")) {
+				if (string.substring(10, string.length()).equals("oracle")) {
+					retorno=false;
+					
+				}
+				break;
+			}
+		}
+		
+		return retorno;
+	}
+	
+	public abstract EntradaDAO criarEntradaDAO();
+	public abstract FornecedorDAO criarFornecedorDAO();
+	public abstract MaterialDAO criarMaterialDAO();
+	public abstract PsfDAO criarPsfDAO();
+	public abstract SubgrupoDAO criarSubgrupoDAO();
+	public abstract UsuarioDAO criarUsuarioDAO();
+	public abstract SaidaDAO criarSaidaDAO();
+	public abstract ItemEntradaDAO criarItemEntradaDAO();
+	public abstract ErroDAO criarErroDAO();
+	
+}

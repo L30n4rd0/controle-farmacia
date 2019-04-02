@@ -1,0 +1,139 @@
+package cadastro;
+
+import javax.swing.JLabel;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.text.ParseException;
+import java.util.Arrays;
+
+import javax.swing.JFormattedTextField;
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
+import javax.swing.JComboBox;
+import javax.swing.JButton;
+import javax.swing.text.MaskFormatter;
+
+import basicas.Fornecedor;
+
+
+import ControleNegocios.AutoCompletion;
+import ControleNegocios.ControleFornecedor;
+import ControleNegocios.interfaces.InterfaceControleFornecedor;
+
+public class TelaCadastroFornecedor extends TelaCadastro{
+	private static final long serialVersionUID = 1L;
+	private JTextField textFieldNome;
+	private JTextField textFieldCnpj;
+	private JLabel lblInscricao;
+	private JTextField textFieldInscricao;
+	private JLabel lblCidade;
+	private JTextField textFieldCidade;
+	private JLabel lblUf;
+	final JComboBox comboBoxUF;
+	private MaskFormatter maskCnpj;
+	
+	public TelaCadastroFornecedor(final Fornecedor editarFornecedor)  {
+		setTitle("Cadastro de Fornecedor");
+		
+		JLabel lblNome = new JLabel("Nome");
+		lblNome.setFont(new Font("SansSerif", Font.PLAIN, 14));
+		lblNome.setBounds(36, 43, 46, 20);
+		panel.add(lblNome);
+		
+		textFieldNome = new JTextField();
+		textFieldNome.setBounds(96, 37, 272, 28);
+		panel.add(textFieldNome);
+		textFieldNome.setColumns(10);
+		
+		
+		JLabel lblCnpj = new JLabel("CNPJ");
+		lblCnpj.setFont(new Font("SansSerif", Font.PLAIN, 14));
+		lblCnpj.setBounds(36, 84, 46, 20);
+		panel.add(lblCnpj);
+		
+		try {
+			maskCnpj = new MaskFormatter("##.###.###/####-##");
+			maskCnpj.setPlaceholderCharacter('_');
+		} catch (ParseException e) {
+			JOptionPane.showMessageDialog(null, "Erro ao criar MaskFormatter CNPJ!", "Erro", JOptionPane.ERROR_MESSAGE);
+			e.printStackTrace();
+		}
+		textFieldCnpj = new JFormattedTextField(maskCnpj);
+		textFieldCnpj.setBounds(96, 77, 166, 28);
+		panel.add(textFieldCnpj);
+		textFieldCnpj.setColumns(10);
+		
+		lblInscricao = new JLabel("Inscri"+(char)231+""+(char)227+"o");
+		lblInscricao.setFont(new Font("SansSerif", Font.PLAIN, 14));
+		lblInscricao.setBounds(16, 123, 66, 20);
+		panel.add(lblInscricao);
+		
+		textFieldInscricao = new JTextField();
+		textFieldInscricao.setBounds(96, 117, 166, 28);
+		panel.add(textFieldInscricao);
+		textFieldInscricao.setColumns(10);
+		
+		lblCidade = new JLabel("Cidade");
+		lblCidade.setFont(new Font("SansSerif", Font.PLAIN, 14));
+		lblCidade.setBounds(27, 167, 55, 20);
+		panel.add(lblCidade);
+		
+		textFieldCidade = new JTextField();
+		textFieldCidade.setBounds(96, 161, 203, 28);
+		panel.add(textFieldCidade);
+		textFieldCidade.setColumns(10);
+		
+		lblUf = new JLabel("UF");
+		lblUf.setFont(new Font("SansSerif", Font.PLAIN, 14));
+		lblUf.setBounds(54, 203, 28, 20);
+		panel.add(lblUf);
+		
+		Arrays.sort(getEstados());
+		comboBoxUF = new JComboBox(getEstados());
+		comboBoxUF.setEditable(true);
+		comboBoxUF.setBounds(96, 201, 55, 20);
+		comboBoxUF.setSelectedItem(getEstados()[15]);
+		panel.add(comboBoxUF);
+		new AutoCompletion(comboBoxUF);
+		
+		if (editarFornecedor!=null) {
+			textFieldNome.setText(editarFornecedor.getNome());
+			textFieldCidade.setText(editarFornecedor.getCidade());
+			textFieldCnpj.setText(editarFornecedor.getCnpj());
+			textFieldInscricao.setText(editarFornecedor.getInscricao());
+			comboBoxUF.setSelectedItem(editarFornecedor.getUf());
+		}
+		
+		JButton btnSalvar = new JButton("Salvar");
+		btnSalvar.setBounds(268, 302, 100, 34);
+		panel.add(btnSalvar);
+		
+		btnSalvar.addActionListener(new ActionListener() {
+			
+			public void actionPerformed(ActionEvent arg0) {
+				InterfaceControleFornecedor controleFornecedor=new ControleFornecedor();
+				String resultado=null;
+				
+				if (editarFornecedor!=null) {
+					resultado=controleFornecedor.alterar(editarFornecedor.getIdFornecedor(), textFieldNome.getText(), textFieldCidade.getText(), comboBoxUF.getSelectedItem().toString(), textFieldCnpj.getText(), textFieldInscricao.getText());
+					
+				}else {
+					resultado=controleFornecedor.salvar(textFieldNome.getText(), textFieldCidade.getText(), comboBoxUF.getSelectedItem().toString(), textFieldCnpj.getText(), textFieldInscricao.getText());
+					
+				}
+				
+				if (resultado.substring(0, 4).equals("Erro")) {
+					JOptionPane.showMessageDialog(null, resultado, "Aten"+(char)231+""+(char)227+"o", JOptionPane.ERROR_MESSAGE);
+				}else {
+					JOptionPane.showMessageDialog(null, resultado, "Informa"+(char)231+""+(char)227+"o", JOptionPane.INFORMATION_MESSAGE);
+					dispose();
+				}
+				
+			}
+		});
+		
+		panel.repaint();
+		setVisible(true);
+	}
+}

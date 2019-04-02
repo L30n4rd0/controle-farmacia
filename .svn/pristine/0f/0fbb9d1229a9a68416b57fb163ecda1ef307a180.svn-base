@@ -1,0 +1,49 @@
+package model;
+
+import model.fornecedor.FornecedorBO;
+import model.fornecedor.FornecedorVO;
+import model.psf.PsfBO;
+import model.psf.PsfVO;
+import model.usuario.UsuarioBO;
+import model.usuario.UsuarioVO;
+
+public class Fachada {
+	
+	public void cadastrarUsuario(UsuarioVO usuario) throws Exception {
+		
+		UsuarioBO usuarioBO=new UsuarioBO();
+		usuarioBO.inserir(usuario);
+		
+	}
+	
+	public void alterarUsuario(UsuarioVO usuario) throws Exception {
+		UsuarioBO usuarioBO=new UsuarioBO();
+		usuarioBO.alterarUsuario(usuario);
+		
+	}
+	
+	public void cadastrarFornecedor(FornecedorVO fornecedor) throws Exception {
+		FornecedorBO fornecedorBO=new FornecedorBO();
+		fornecedorBO.inserir(fornecedor);
+		
+	}
+	
+	public void alterarFornecedor(FornecedorVO fornecedor)throws Exception {
+		FornecedorBO fornecedorBO=new FornecedorBO();
+		fornecedorBO.alterar(fornecedor);
+		
+	}
+	
+	public void cadastrarPSF(PsfVO psf) throws Exception {
+		
+		PsfBO psfBO=new PsfBO();
+		psfBO.inserir(psf);
+		
+	}
+	
+	public void alterarPSF(PsfVO psf) throws Exception {
+		PsfBO psfBO=new PsfBO();
+		psfBO.alterar(psf);
+		
+	}
+}

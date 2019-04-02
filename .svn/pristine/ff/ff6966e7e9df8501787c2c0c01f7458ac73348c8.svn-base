@@ -1,0 +1,80 @@
+package basicas;
+
+import java.sql.Date;
+
+public class Material {
+	private int idMaterial;
+	private double precoUnitario;
+	private String descricao, apresentacao, grupo, subGrupo;
+	private Date dataCadastro;
+	
+	public Material(int idMaterial, String descricao, String apresentacao, String grupo, String subGrupo, Date dataCadastro, double precoUnitario) {
+		this.idMaterial=idMaterial;
+		this.descricao=descricao;
+		this.apresentacao=apresentacao;
+		this.grupo=grupo;
+		this.subGrupo=subGrupo;
+		this.dataCadastro=dataCadastro;
+		this.precoUnitario=precoUnitario;
+	}
+	
+	public Material(){
+		
+	}
+	
+	public void setIdMaterial(int idMaterial) {
+		this.idMaterial = idMaterial;
+	}
+
+	public void setPrecoUnitario(double precoUnitario) {
+		this.precoUnitario = precoUnitario;
+	}
+
+	public void setDescricao(String descricao) {
+		this.descricao = descricao;
+	}
+
+	public void setApresentacao(String apresentacao) {
+		this.apresentacao = apresentacao;
+	}
+
+	public void setGrupo(String grupo) {
+		this.grupo = grupo;
+	}
+
+	public void setSubGrupo(String subGrupo) {
+		this.subGrupo = subGrupo;
+	}
+
+	public void setDataCadastro(Date dataCadastro) {
+		this.dataCadastro = dataCadastro;
+	}
+
+	public int getIdMaterial() {
+		return this.idMaterial;
+	}
+
+	public double getPrecoUnitario() {
+		return this.precoUnitario;
+	}
+
+	public String getDescricao() {
+		return this.descricao;
+	}
+
+	public String getApresentacao() {
+		return this.apresentacao;
+	}
+
+	public String getGrupo() {
+		return this.grupo;
+	}
+
+	public String getSubGrupo() {
+		return this.subGrupo;
+	}
+
+	public Date getDataCadastro() {
+		return this.dataCadastro;
+	}
+}

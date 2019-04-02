@@ -1,0 +1,158 @@
+package consultas;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import javax.swing.JOptionPane;
+
+import basicas.Fornecedor;
+import basicas.Usuario;
+
+import cadastro.TelaCadastroFornecedor;
+
+import ControleNegocios.ControleFornecedor;
+import ControleNegocios.interfaces.InterfaceControleFornecedor;
+
+public class TelaConsultaFornecedor extends TelaConsulta{
+	private static final long serialVersionUID = 1L;
+	private InterfaceControleFornecedor controleFornecedor;
+	
+	@SuppressWarnings("unchecked")
+	public TelaConsultaFornecedor(Usuario userLogado) {
+		super(userLogado);
+		setTitle("Fornecedor");
+		
+		controleFornecedor=new ControleFornecedor();
+		
+		getComboBoxPesquisa().addItem("Nome");
+		getComboBoxPesquisa().addItem("ID");
+		getComboBoxPesquisa().addItem("Cidade");
+		getComboBoxPesquisa().addItem("UF");
+		getComboBoxPesquisa().addItem("CNPJ");
+		getComboBoxPesquisa().addItem("Inscri"+(char)231+""+(char)227+"o");
+		getComboBoxPesquisa().addItem("Data de Cadastro");
+		
+		getComboBoxOrganiza().addItem("ID");
+		getComboBoxOrganiza().addItem("Nome");
+		getComboBoxOrganiza().addItem("Cidade");
+		getComboBoxOrganiza().addItem("UF");
+		getComboBoxOrganiza().addItem("CNPJ");
+		getComboBoxOrganiza().addItem("Inscri"+(char)231+""+(char)227+"o");
+		getComboBoxOrganiza().addItem("Data de Cadastro");
+		
+		getTextFieldPesquisa().setText("");
+		
+		atualizaTabela(getComboBoxPesquisa().getSelectedItem().toString(), getComboBoxOrganiza().getSelectedItem().toString(), getTextFieldPesquisa().getText());
+		
+		setVisible(true);
+	}
+	
+	public void actionPerformed(ActionEvent e) {
+		if (e.getSource()==getBtnDeletar()) {
+			if (getTabela().getSelectedRow()==-1) {
+				JOptionPane.showMessageDialog(null, "Por favor selecione uma linha.");
+				
+			}else {
+				
+				String resultado=controleFornecedor.excluir(Integer.parseInt(getTabela().getValueAt(getTabela().getSelectedRow(), 0).toString()), getTabela().getValueAt(getTabela().getSelectedRow(), 1).toString());
+				
+				if (resultado.substring(0, 4).equals("Erro")) {
+					JOptionPane.showMessageDialog(null, resultado, "Erro", JOptionPane.ERROR_MESSAGE);
+					
+				}else {
+					JOptionPane.showMessageDialog(null, resultado, "Informa"+(char)231+""+(char)227+"o", JOptionPane.INFORMATION_MESSAGE);
+				}
+				
+				atualizaTabela(getComboBoxPesquisa().getSelectedItem().toString(), getComboBoxOrganiza().getSelectedItem().toString(), getTextFieldPesquisa().getText());
+			}
+		}else if (e.getSource()==getComboBoxOrganiza()) {
+			atualizaTabela(getComboBoxPesquisa().getSelectedItem().toString(), getComboBoxOrganiza().getSelectedItem().toString(), getTextFieldPesquisa().getText());
+			
+		}else if (e.getSource()==getBtnEditar()) {
+			if (getTabela().getSelectedRow()==-1) {
+				JOptionPane.showMessageDialog(null, "Por favor selecione uma linha.");
+			}else {
+				new TelaCadastroFornecedor(new Fornecedor(
+						Integer.parseInt(getTabela().getValueAt(getTabela().getSelectedRow(), 0).toString()),//id do fornecedor selecionado
+						getTabela().getValueAt(getTabela().getSelectedRow(), 1).toString(),//nome do fornecedor selecionado
+						getTabela().getValueAt(getTabela().getSelectedRow(), 2).toString(),//cidade do fornecedor selecionado
+						getTabela().getValueAt(getTabela().getSelectedRow(), 3).toString(),//uf do fornecedor selecionado
+						getTabela().getValueAt(getTabela().getSelectedRow(), 4).toString(),//cnoj do fornecedor selecionado
+						getTabela().getValueAt(getTabela().getSelectedRow(), 5).toString(),//inscricao do fornecedor selecionado
+						null));//data do fornecedor nao sera modificada
+				
+				atualizaTabela(getComboBoxPesquisa().getSelectedItem().toString(), getComboBoxOrganiza().getSelectedItem().toString(), getTextFieldPesquisa().getText());
+			}
+		}
+	}
+	
+	public void keyReleased(KeyEvent e) {
+		if (e.getSource()==getTextFieldPesquisa()) {
+			atualizaTabela(getComboBoxPesquisa().getSelectedItem().toString(), getComboBoxOrganiza().getSelectedItem().toString(), getTextFieldPesquisa().getText());
+		}
+		
+	}
+	
+	public void atualizaTabela(String pesquisarPor, String organizarPor, String textoPesquisa) {
+		
+		if (pesquisarPor.equals("Nome"))
+			pesquisarPor="nome";
+			
+		else if (pesquisarPor.equals("ID"))
+			pesquisarPor="idFornecedor";
+		
+		else if (pesquisarPor.equals("Cidade"))
+			pesquisarPor="cidade";
+		
+		else if (pesquisarPor.equals("UF"))
+			pesquisarPor="uf";
+		
+		else if (pesquisarPor.equals("CNPJ"))
+			pesquisarPor="cnpj";
+		
+		
+		else if (pesquisarPor.equals("Inscri"+(char)231+""+(char)227+"o"))
+			pesquisarPor="inscricao";
+		
+		else if (pesquisarPor.equals("Data de Cadastro"))
+			pesquisarPor="dataCadastro";
+//		********************************************
+		if (organizarPor.equals("Nome"))
+			organizarPor="nome";
+			
+		else if (organizarPor.equals("ID"))
+			organizarPor="idFornecedor";
+		
+		else if (organizarPor.equals("Cidade"))
+			organizarPor="cidade";
+		
+		else if (organizarPor.equals("UF"))
+			organizarPor="uf";
+		
+		else if (organizarPor.equals("CNPJ"))
+			organizarPor="cnpj";
+		
+		
+		else if (organizarPor.equals("Inscri"+(char)231+""+(char)227+"o"))
+			organizarPor="inscricao";
+		
+		else if (organizarPor.equals("Data de Cadastro"))
+			organizarPor="dataCadastro";
+		
+		try {
+			remove(getScrollPane());
+			
+		} catch (Exception e) {}
+		
+		setTabela(controleFornecedor.obterTabela(pesquisarPor, organizarPor, textoPesquisa));
+		
+		getScrollPane().setViewportView(getTabela());
+		getScrollPane().repaint();
+		add(getScrollPane());
+		
+	}
+	
+	public static void main(String[] args) {
+		//new TelaConsultaFornecedor(getNivel());
+	}
+}
+

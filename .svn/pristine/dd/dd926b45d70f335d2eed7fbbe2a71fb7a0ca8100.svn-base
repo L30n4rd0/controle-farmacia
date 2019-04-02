@@ -1,0 +1,10 @@
+Não foi possivel conectar com o banco
+ErrorCode: 1045
+LocalizedMessage: Access denied for user 'root'@'localhost' (using password: YES)
+SQLExceptionMessage:Access denied for user 'root'@'localhost' (using password: YES)
+SQLState: 28000
+Cause: null
+Class: class java.sql.SQLException
+NextException: null
+StackTrace: [Ljava.lang.StackTraceElement;@a62e15c
+Suppressed: [Ljava.lang.Throwable;@61b96457

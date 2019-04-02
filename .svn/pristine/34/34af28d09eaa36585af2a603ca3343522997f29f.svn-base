@@ -1,0 +1,43 @@
+package ControleNegocios;
+
+
+import java.util.ArrayList;
+
+import basicas.Usuario;
+
+import ControleNegocios.interfaces.InterfaceControleLogin;
+import admBanco.InterfaceBanco;
+import admBanco.DAOs.UsuarioDAO;
+
+public class ControleLogin implements InterfaceControleLogin{
+
+	public Object validarUsuario(String login, String senha) {
+		Object retorno=null;
+		
+		if(login.equals("") || senha.equals("")){
+			retorno="Preencha todos os campos.";
+			
+		}else {
+			InterfaceBanco admUsuario=new UsuarioDAO(); 
+			ArrayList<Object>tempLista=admUsuario.listar("login", "nome", login);
+			
+			if (tempLista.size()==0) {
+				retorno="Usu"+(char)225+"rio n"+(char)227+"o cadastrado.";
+			}else {
+				Usuario usuario=(Usuario)tempLista.get(0);
+				String senhaGerada="";
+				
+				for (int i = 0; i < senha.length(); i++) senhaGerada+=((int)senha.charAt(i)+55);
+				
+				if (usuario.getSenha().equals(senha)) { // <<<<<< TROQUEI PARA NAO GERAR, BD AKI DESATUALIZADO
+					retorno=usuario;
+					
+				}else {
+					retorno="A senha do usu"+(char)225+"rio est"+(char)225+" errada.";
+				}
+				
+			}
+		}	
+		return retorno;
+	}
+}

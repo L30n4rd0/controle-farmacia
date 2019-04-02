@@ -1,0 +1,227 @@
+package cadastro;
+
+import javax.swing.JFormattedTextField;
+import javax.swing.JInternalFrame;
+import javax.swing.JLabel;
+import javax.swing.JComboBox;
+import javax.swing.JOptionPane;
+
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.text.ParseException;
+
+import javax.swing.JTextField;
+import javax.swing.JButton;
+import javax.swing.JPanel;
+import javax.swing.border.TitledBorder;
+import javax.swing.event.InternalFrameEvent;
+import javax.swing.event.InternalFrameListener;
+import javax.swing.text.MaskFormatter;
+
+import basicas.Material;
+
+import ControleNegocios.AutoCompletion;
+import ControleNegocios.ControleMaterial;
+import ControleNegocios.JDateTextField;
+import ControleNegocios.NumberField;
+import ControleNegocios.interfaces.InterfaceControleMaterial;
+
+public class InserirItens extends JInternalFrame implements ActionListener{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	//private JTextField textField;
+	private JTextField textField;
+	private JDateTextField textField_1;
+	private JTextField textField_2;
+	private JTextField textField_3;
+	private JTextField textField_4;
+	private MaskFormatter mascara_1;
+	private JButton btnOk;
+	private JComboBox comboBox;
+	private DeskPanel_Material desk_panel;
+	private Material material;
+	private String listaMaterial[];
+	
+	public InserirItens(DeskPanel_Material panelPai) {
+
+		super("Inserir Itens", true, true, true, true);  
+				
+		try {
+			javax.swing.UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		
+		addInternalFrameListener(new InternalFrameListener() {  
+            
+            public void internalFrameOpened(InternalFrameEvent arg0) {}  
+              
+            public void internalFrameIconified(InternalFrameEvent arg0) {}  
+              
+            public void internalFrameDeiconified(InternalFrameEvent arg0) {}  
+              
+            public void internalFrameDeactivated(InternalFrameEvent arg0) {}  
+              
+            public void internalFrameClosing(InternalFrameEvent arg0) {  
+                                          //Aqui que � adicionada a parada.  
+               //setVisible(false);  
+               dispose();
+            }  
+              
+            public void internalFrameClosed(InternalFrameEvent arg0) {}  
+              
+            public void internalFrameActivated(InternalFrameEvent arg0) {}  
+        });  
+	
+		
+		this.desk_panel = panelPai;
+		
+		
+		JPanel panel = new JPanel();
+		panel.setBackground(Color.LIGHT_GRAY);
+		panel.setBounds(10, 11, 407, 241);
+		panel.setBorder(new TitledBorder(null, "", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		panel.setLayout(null);
+		getContentPane().add(panel);
+		
+		
+		JLabel lblDescricao = new JLabel("Descri"+(char)231+""+(char)227+"o");
+		lblDescricao.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		lblDescricao.setBounds(62, 30, 59, 23);
+		panel.add(lblDescricao);
+		
+		
+		comboBox = new JComboBox<Object>(carregarLista());
+		comboBox.setBounds(131, 28, 256, 28);
+		panel.add(comboBox);
+		AutoCompletion.enable(comboBox);
+		
+		JLabel lblLote = new JLabel("Lote");
+		lblLote.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		lblLote.setBounds(94, 73, 27, 14);
+		panel.add(lblLote);
+		
+		textField = new JTextField();
+		textField.setBounds(131, 67, 86, 28);
+		textField.setColumns(10);
+		panel.add(textField);
+		
+		JLabel lblValidade = new JLabel("Validade");
+		lblValidade.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		lblValidade.setBounds(242, 73, 49, 14);
+		panel.add(lblValidade);
+		
+		textField_1 = new JDateTextField();
+		textField_1.setBounds(301, 67, 86, 28);
+		textField_1.setColumns(10);
+		panel.add(textField_1);
+		
+		JLabel lblQuantPedida = new JLabel("Quant. Pedida");
+		lblQuantPedida.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		lblQuantPedida.setBounds(34, 112, 87, 20);
+		panel.add(lblQuantPedida);
+		
+		textField_2 = new NumberField();
+		textField_2.setBounds(131, 109, 86, 28);
+		textField_2.setColumns(10);
+		panel.add(textField_2);
+		
+		JLabel lblQuantEntregue = new JLabel("Quant. Entregue");
+		lblQuantEntregue.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		lblQuantEntregue.setBounds(18, 151, 103, 20);
+		panel.add(lblQuantEntregue);
+		
+		textField_3 = new NumberField();
+		textField_3.setBounds(131, 148, 86, 28);
+		textField_3.setColumns(10);
+		panel.add(textField_3);
+		
+		btnOk = new JButton("OK");
+		btnOk.setBounds(288, 185, 99, 33);
+		panel.add(btnOk);
+		
+		
+		btnOk.addActionListener(new ActionListener() {
+			
+			public void actionPerformed(ActionEvent arg0) {
+			
+				InterfaceControleMaterial admMaterial = new ControleMaterial();
+				material = (Material)admMaterial.buscar((String)comboBox.getSelectedItem());
+				
+				if(textField_1.isEmptyDate() || textField_1.isValidDate(textField_1.getText()) == false){
+					JOptionPane.showMessageDialog(null, "Data inv"+(char)225+"lida ou ano n"+(char)227+"o registrado");
+				}
+				else{
+				
+					if(textField.getText().equals("") || textField_2.getText().equals("") 
+							|| textField_3.getText().equals("")){
+						JOptionPane.showMessageDialog(null, "Preencha todos os campos corretamente.", "Erro!", JOptionPane.ERROR_MESSAGE);
+					}
+					else{
+						
+						int item = desk_panel.getTable_1().getRowCount()+1;
+						double total = calcularTotal();
+						
+						if(total != 0.0){
+							
+							String form[] = {""+(item), ""+comboBox.getSelectedItem(), material.getApresentacao(),""+textField.getText(),
+									""+textField_1.getText(), ""+textField_2.getText(), ""+textField_3.getText(),
+									""+material.getPrecoUnitario(), ""+total};
+							
+							desk_panel.atualizarTabela(form);
+							doDefaultCloseAction();
+							
+						}
+							
+						
+					}
+				}
+				
+			}
+		});
+		
+		setDefaultCloseOperation(JInternalFrame.EXIT_ON_CLOSE); 
+		getContentPane().setLayout(null);
+		setSize(433,294);
+		setVisible(true);
+
+	}
+	
+	private double calcularTotal(){
+		
+		double total = 0;
+		double precoUnitario = material.getPrecoUnitario();
+		int quantidade = Integer.parseInt(textField_3.getText());
+			
+			
+		total = quantidade*precoUnitario;
+			
+		return total;
+		
+	}
+	
+	private String[] carregarLista(){
+		
+		InterfaceControleMaterial admMaterial = new ControleMaterial();
+		
+		if(desk_panel.getGrupo().equals("Medicamento")) return admMaterial.listar("Medicamento");
+		if(desk_panel.getGrupo().equals("Penso")) return admMaterial.listar("Penso");
+		
+			
+		
+		return admMaterial.listar("Odontologico");
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+}

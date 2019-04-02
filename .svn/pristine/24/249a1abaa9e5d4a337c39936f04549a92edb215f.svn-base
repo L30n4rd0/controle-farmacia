@@ -1,0 +1,34 @@
+package model.erros;
+
+import java.util.ArrayList;
+
+public class ObservadorAdministrador extends Observador{
+	private String nome, email;
+
+	public ObservadorAdministrador(String nome, String email) {
+		this.nome = nome;
+		this.email = email;
+	}
+
+	@Override
+	public void processarErro(ArrayList<ErroVO> erros) {
+//		System.out.println("Enviar email para o administrador, quantidade de erros: "+erro.size());
+		
+		for (ErroVO erro : erros) {
+			System.out.println(erro.getCodigoError());
+			System.out.println(erro.getInformacoes());
+			System.out.println(erro.getStatus());
+			System.out.println(erro.getData()+"\n\n");
+			
+		}
+	}
+
+	public String getNome() {
+		return this.nome;
+	}
+
+	public String getEmail() {
+		return this.email;
+	}
+
+}
