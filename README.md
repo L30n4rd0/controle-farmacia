@@ -4,6 +4,7 @@ Projeto desenvolvido nas disciplinas Processo de Desenvolvimento de Software e A
 # Ferramentas utilizadas no desenvolvimento
 - Eclipe IDE para edição de códigos (Linguagem Java);
 - MySQL Workbench para modelagem e criação do banco de dados (MySql);
+- Biblioteca JDBC para conexão com o Banco de Dados;
 
 
 # Screenshots
