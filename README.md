@@ -1,5 +1,10 @@
-# controle-farmacia
-Projeto desenvolvido na disciplina de Arquitetura de Software, no curso de SI, em UFRPE/UAST.
+# Controle Farmacia
+Projeto desenvolvido nas disciplinas Processo de Desenvolvimento de Software e Arquitetura de Software, no curso de Sistemas de Informação, em UFRPE/UAST.
+
+# Ferramentas utilizadas no desenvolvimento
+- Eclipe IDE para edição de códigos (Linguagem Java);
+- MySQL Workbench para modelagem e criação do banco de dados (MySql);
+
 
 # Screenshots
 
